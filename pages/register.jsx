@@ -52,7 +52,7 @@ export default class Register extends Component {
                         </Show>
 
                         <Show condicion={ pass == 2 }>
-                            <CreateTramite />
+                            <CreateTramite { ...this.props } person={ this.state.person } />
                         </Show>
                     </div>
                 </div>

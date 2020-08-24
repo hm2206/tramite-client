@@ -10,7 +10,7 @@ import Navbar from '../components/navbar';
 import Footer from '../components/footer';
 import Show from '../components/show';
 import LoaderPage from '../components/loaderPage';
-import { authentication, recursoshumanos } from '../services/apis';
+import { authentication } from '../services/apis';
 import LoadingGlobal from '../components/loadingGlobal';
 import Cookies from 'js-cookie';
 
@@ -116,6 +116,7 @@ export default class MyApp extends App {
                     <link rel="stylesheet" href="/font-awesome/css/all.min.css" media="all" />
                     <link rel="stylesheet" type="text/css" href="/css/app.css" />
                     <link rel="stylesheet" type="text/css" href="/css/page_loading.css" />
+                    {/* <link rel="stylesheet" type="text/css" href="/css/DropZone.css" /> */ }
                 </Head>
 
                 <LoadingGlobal display="none" id="loading-brand" />

@@ -1,17 +1,16 @@
 import React, { Component } from 'react';
 import { Form, Card, Button, Icon } from 'semantic-ui-react';
-import { authentication, recursoshumanos } from '../services/apis';
+import { authentication } from '../services/apis';
 import Swal from 'sweetalert2';
-import Router from 'next/router';
 import Show from './show';
 
 export default class CreatePerson extends Component {
 
     state = {
-        is_search: false,
+        is_search: true,
         enable_register: false,//habilita el boton de registrate
         documento: "",
-        block: false,
+        block: true,
         loading: false,
         document_types: [],
         departamentos: [],
@@ -122,6 +121,8 @@ export default class CreatePerson extends Component {
                 }
                 this.val_number({ name, value, label });
                 break;
+
+
             default:
                 break;
         }
@@ -161,40 +162,27 @@ export default class CreatePerson extends Component {
         return true;
     }
 
-    register = () => {
 
-        /*    this.setState(state => {
-                state.form[name] = value;
-                return { form: state.form };
-            });
-    
-            // update convocatorias
-             this.setState(state => {
-                 state.convocatorias = [...state.convocatorias, ...convocatoria.data];
-                 return { convocatorias: state.convocatorias };
-             });
-         })
-                 .catch (err => this.setState({ convocatorias: [] }));
-             this.props.setLoading(false);*/
-    }
-
-    save = async () => {
-        this.setState({ loading: true });
+    register = async () => {
+        this.props.setLoading(true);
         let { state } = this;
-        let form = Object.assign({}, state.form);
-        form.ubigeo_id = `${state.cod_dep}${state.cod_pro}${state.cod_dis}`;
-        form.redirect = `${location.origin}/verify`;
+        let form = Object.assign({}, state.form);//clona el form
+        form.cod_dep = state.cod_dep
+        form.cod_pro = state.cod_pro
+        form.cod_dis = state.cod_dis
         // send form
-        await recursoshumanos.post('postulante', form)
+        await authentication.post('person', form)
             .then(async res => {
-                let { success, message, postulante } = res.data;
+                this.props.setLoading(false);
+                let { success, message, person } = res.data;
                 if (!success) throw new Error(message);
                 await Swal.fire({ icon: 'success', text: message });
-                let { push } = Router;
-                await push({ pathname: '/login', query: { email: postulante.email } });
+                await this.setState({ form: person });
+                this.continuar();
             })
             .catch(async err => {
                 try {
+                    this.props.setLoading(false);
                     let response = JSON.parse(err.message);
                     Swal.fire({ icon: 'warning', text: response.message });
                     this.setState({ errors: response.errors });
@@ -202,7 +190,6 @@ export default class CreatePerson extends Component {
                     Swal.fire({ icon: 'error', text: err.message });
                 }
             });
-        this.setState({ loading: false });
     }
 
     findPerson = async () => {
@@ -218,7 +205,8 @@ export default class CreatePerson extends Component {
                     is_search: false,
                     form: res.data,
                     block: true,
-                    cod_dep: res.data.cod_dep
+                    cod_dep: res.data.cod_dep,
+                    errors: {}
 
                 })
                 // execute provincia
@@ -325,7 +313,7 @@ export default class CreatePerson extends Component {
                                         <input type="text"
                                             name="ape_mat"
                                             value={ form.ape_mat || "" }
-                                            onChange={ (e) => this.handleInput(e.target) }
+                                            onChange={ (e) => this.handleInput(e.target, "Apellido Materno") }
                                             disabled={ loading || block }
                                         />
                                         <label>{ errors.ape_mat && errors.ape_mat[0] }</label>
@@ -338,7 +326,7 @@ export default class CreatePerson extends Component {
                                         <input type="text"
                                             name="name"
                                             value={ form.name || "" }
-                                            onChange={ (e) => this.handleInput(e.target) }
+                                            onChange={ (e) => this.handleInput(e.target, "Nombre") }
                                             disabled={ loading || block }
                                         />
                                         <label>{ errors.name && errors.name[0] }</label>
@@ -351,7 +339,7 @@ export default class CreatePerson extends Component {
                                         <input type="date"
                                             name="date_of_birth"
                                             value={ form.date_of_birth || block }
-                                            onChange={ (e) => this.handleInput(e.target) }
+                                            onChange={ (e) => this.handleInput(e.target, "Fecha de Nacimiento") }
                                             disabled={ loading || block }
                                         />
                                         <label>{ errors.date_of_birth && errors.date_of_birth[0] }</label>
@@ -363,7 +351,7 @@ export default class CreatePerson extends Component {
                                         <label className="text-muted">Género <b className="text-danger">*</b></label>
                                         <select name="gender"
                                             value={ form.gender || block }
-                                            onChange={ (e) => this.handleInput(e.target) }
+                                            onChange={ (e) => this.handleInput(e.target, "Genero") }
                                             disabled={ loading || block }
                                         >
                                             <option value="">Seleccionar Género</option>
@@ -386,7 +374,7 @@ export default class CreatePerson extends Component {
                                         <label className="text-muted">Departamento <b className="text-danger">*</b></label>
                                         <select name="cod_dep"
                                             value={ this.state.cod_dep || "" }
-                                            onChange={ (e) => this.handleSelect(e.target) }
+                                            onChange={ (e) => this.handleSelect(e.target, "Departamento") }
                                             disabled={ loading || block }
                                         >
                                             <option value="">Seleccionar Departamento</option>
@@ -407,7 +395,7 @@ export default class CreatePerson extends Component {
                                         <label className="text-muted">Provincia <b className="text-danger">*</b></label>
                                         <select name="cod_pro"
                                             value={ this.state.cod_pro || "" }
-                                            onChange={ (e) => this.handleSelect(e.target) }
+                                            onChange={ (e) => this.handleSelect(e.target, "Provincia") }
                                             disabled={ !this.state.cod_dep || loading || block }
                                         >
                                             <option value="">Seleccionar Provincias</option>
@@ -428,7 +416,7 @@ export default class CreatePerson extends Component {
                                         <label className="text-muted">Distrito <b className="text-danger">*</b></label>
                                         <select name="cod_dis"
                                             value={ this.state.cod_dis || "" }
-                                            onChange={ (e) => this.handleSelect(e.target) }
+                                            onChange={ (e) => this.handleSelect(e.target, "Distrito") }
                                             disabled={ !this.state.cod_pro || loading || block }
                                         >
                                             <option value="">Seleccionar Distrito</option>
@@ -450,7 +438,7 @@ export default class CreatePerson extends Component {
                                         <input type="text"
                                             name="address"
                                             value={ form.address || "" }
-                                            onChange={ (e) => this.handleInput(e.target) }
+                                            onChange={ (e) => this.handleInput(e.target, "Direccion") }
                                             disabled={ loading || block }
                                         />
                                         <label>{ errors.address && errors.address[0] }</label>
@@ -525,8 +513,6 @@ export default class CreatePerson extends Component {
                                             <i className="fas fa-arrow-right"></i> Registrar
                                         </Button>
                                     </Show>
-
-
                                 </div>
                             </Show>
                         </div>

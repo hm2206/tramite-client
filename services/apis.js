@@ -44,36 +44,18 @@ export const authentication = {
 
 
 /**
- * api para consumir el sistema de planillas
+ * api para consumir el sistema de tramite
  */
-export const unujobs = {
+export const tramite = {
     get: async (path, config = {}, ctx) => {
-        return axios.get(`${url.API_UNUJOBS}/${path}`, await ConfigHeaders(ctx, config));
+        return axios.get(`${url.API_TRAMITE}/${path}`, await ConfigHeaders(ctx, config));
     },
     post: async (path, body = {}, config = {}, ctx) => {
-        return axios.post(`${url.API_UNUJOBS}/${path}`, body, await ConfigHeaders(ctx, config));
+        return axios.post(`${url.API_TRAMITE}/${path}`, body, await ConfigHeaders(ctx, config));
     },
     fetch: async (path, config = {}, ctx) => {
-        return fetch(`${url.API_UNUJOBS}/${path}`, await ConfigHeaders(ctx, config));
+        return fetch(`${url.API_TRAMITE}/${path}`, await ConfigHeaders(ctx, config));
     },
-    path: url.API_UNUJOBS
+    path: url.API_TRAMITE
 };
-
-
-/**
- * api para consumir el sistema de planillas
- */
-export const recursoshumanos = {
-    get: async (path, config = {}, ctx) => {
-        return axios.get(`${url.API_RECURSOSHUMANOS}/${path}`, await ConfigHeaders(ctx, config));
-    },
-    post: async (path, body = {}, config = {}, ctx) => {
-        return axios.post(`${url.API_RECURSOSHUMANOS}/${path}`, body, await ConfigHeaders(ctx, config));
-    },
-    fetch: async (path, config = {}, ctx) => {
-        return fetch(`${url.API_RECURSOSHUMANOS}/${path}`, await ConfigHeaders(ctx, config));
-    },
-    path: url.API_RECURSOSHUMANOS
-};
-
 
