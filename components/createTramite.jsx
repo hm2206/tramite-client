@@ -61,8 +61,6 @@ class CreateTramite extends Component {
         return false;
     }
 
-
-
     setErrors = ({ name, message }) => {
         this.setState(state => {
             state.errors[name] = [message];
@@ -193,6 +191,23 @@ class CreateTramite extends Component {
             .catch(err => console.log(err.message));
     }
 
+    generateCode = async () => {
+        let { person } = this.props;
+        this.handleInput({ name: 'code', value: "" });
+        this.props.setLoading(true);
+        await tramite.post('code_verify', {
+            person_id: person.id || "_error"
+        }).then(async res => {
+            this.props.setLoading(false);
+            let { success, message } = res.data;
+            if (!success) throw new Error(message);
+            await Swal.fire({ icon: 'success', text: message });
+        }).catch(async err => {
+            this.props.setLoading(false);
+            await Swal.fire({ icon: 'error', text: 'No se pudo generar el código' })
+        });
+    }
+
     deleteFile = (index, file) => {
         this.setState(state => {
             state.file.data.splice(index, 1);
@@ -260,6 +275,29 @@ class CreateTramite extends Component {
                     <Form >
                         <div className="form-group row">
                             <Form.Field className="col-md-12" error={ errors.entity_id && errors.entity_id[0] || "" }>
+                                <label for="c_fname">Código de Verificación <span className="text-danger">*</span></label>
+                                <div className="row">
+                                    <div className="col-md-10">
+                                        <input
+                                            placeholder="Ingrese el código de 8 cífras"
+                                            value={ form.code || "" }
+                                            name="code"
+                                            onChange={ (e) => this.handleInput(e.target) }
+                                        />
+                                    </div>
+
+                                    <div className="col-md-2">
+                                        <button className="btn btn-success btn-sm"
+                                            onClick={this.generateCode}
+                                        >
+                                            <i className="fas fa-sync"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <label htmlFor="">{ errors.entity_id && errors.entity_id[0] || "" }</label>
+                            </Form.Field>
+
+                            <Form.Field className="col-md-12" error={ errors.entity_id && errors.entity_id[0] || "" }>
                                 <label for="c_fname">Entidad <span className="text-danger">*</span></label>
                                 <Form.Select
                                     placeholder="Seleccione la Entidad"
@@ -322,36 +360,7 @@ class CreateTramite extends Component {
                                 />
                                 <label>{ errors.asunto && errors.asunto[0] || "" }</label>
                             </Form.Field>
-                            { /*<Form.Field className="col-md-12" error={ errors.files && errors.files[0] || "" }>
-                                <label for="c_fname">Adjuntar Documento <span className="text-danger">*</span></label>
-                                <label htmlFor="files" className="ui button">
-                                    <input type="file" id="files" name="files" multiple accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden onChange={ (e) => this.handleFile(e.target) } />
-                                    <i className="fas fa-upload"></i> Adjuntar Documento (*.docx y *.pdf)
-                               </label>
-                                <label>{ errors.files && errors.files[0] || "" }</label>
-                            </Form.Field>
-                                <Show condicion={ form.files && form.files.data && form.files.data.length }>
-                                    <div className="col-md-12">
-                                        { form.files.data.map((f, indexF) =>
-                                            <div className="row">
-                                                <Form.Field className="col-md-10" key={ `file-drop-${indexF}` } >
-                                                    <label className="ui button green text-white"  >
-                                                        { `${Math.round(f.size / 1024)}Kb` } | <i className={ `fas fa-file-${f.name.split('.').pop()}` }></i> { f && f.name }
-                                                    </label>
-                                                </Form.Field>
 
-                                                <div className="col-md-2">
-                                                    <button className="btn btn-danger"
-                                                        onClick={ (e) => this.deleteFile(indexF) }
-                                                    >
-                                                        <i className="far fa-trash-alt"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ) }
-                                    </div>
-                                </Show>
-                                        */}
                             <Form.Field className="col-md-12">
                                 <DropZone id="files"
                                     name="files"
