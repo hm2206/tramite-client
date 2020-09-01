@@ -3,11 +3,10 @@ import { Form, Button, Input } from 'semantic-ui-react';
 import Show from '../components/show';
 import Router from 'next/router';
 import InfoTramite from '../components/infoTramite'
-import TimeLine from '../components/timeLime';
+
 import { findTramite } from '../services/request/tramite';
-
-
-
+import dynamic from 'next/dynamic'
+const TimeLine = dynamic(() => import('../components/TimeLine'), { ssr: false });
 export default class Index extends Component {
 
     static getInitialProps = async (ctx) => {
@@ -47,7 +46,7 @@ export default class Index extends Component {
 
         return (
 
-            <div className="container mt-5">
+            <div className="container mt-5" >
                 <Form>
                     <div className="row">
                         <div className="col-md-9 col-12 mb-1">
@@ -65,10 +64,14 @@ export default class Index extends Component {
                                 <i className="fas fa-search"></i> Buscar
                             </Button>
                         </div>
+
                         <Show condicion={ success }>
                             <div className="col-md-12  text-center ">
                                 <div className="row">
-                                    <InfoTramite tramite={ tramite } />
+                                    <div className="col-md-12">
+                                        <InfoTramite tramite={ tramite } />
+                                    </div>
+
                                     <div className="col-md-12 mt-4">
                                         <TimeLine tramite={ tramite } { ...this.props } />
                                     </div>
@@ -79,7 +82,7 @@ export default class Index extends Component {
 
                     </div>
                 </Form>
-            </div>
+            </div >
         )
     }
 

@@ -1,4 +1,4 @@
-import React from  'react';
+import React from 'react';
 
 export default ({ condicion = true, children }) => {
     if (condicion) return children;

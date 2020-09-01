@@ -18,9 +18,9 @@ export default class Navbar extends Component {
         let { app, isLoggin } = this.props;
 
         return (
-            <nav className={ `navbar navbar-expand-md navbar-dark fixed-top` }>
+            <nav className={ `navbar navbar-expand-md navbar-dark fixed-top` } style={ { background: '#00a28a' } }>
                 <a className="navbar-brand" href="#">
-                    <img src={ app.icon || '/img/logo.png' } alt="Logo" className="logo" />
+                    <img src={ app.icon || '/img/logo.png' } alt="Logo" style={ { background: 'white', borderRadius: '8px', padding: '2px' } } className="logo" />
                     { app.name || 'Convocatorias' }
                 </a>
                 <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">

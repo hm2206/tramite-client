@@ -4,6 +4,7 @@ import { authentication, tramite } from '../services/apis';
 import Swal from 'sweetalert2';
 import Show from '../components/show';
 import Router from 'next/router';
+import DropZone from '../components/dropzone';
 
 class CreateTramite extends Component {
 
@@ -12,6 +13,7 @@ class CreateTramite extends Component {
         dependencias: [],
         tramite_types: [],
         errors: {},
+        file: { size: 0, data: [] },
         form: {
             entity_id: "",
             dependencia_id: "",
@@ -19,7 +21,6 @@ class CreateTramite extends Component {
             tramite_type_id: "",
             folio_count: "",
             asunto: "",
-            files: { size: 0, data: [] },
             termino: false
         }
     }
@@ -41,6 +42,27 @@ class CreateTramite extends Component {
         this.listenerChange({ name, value });
     }
 
+    handleFiles = ({ files }) => {
+        let { file } = this.state;
+        let size_total = file.size;
+        let size_limit = 2 * 1024;
+        for (let f of files) {
+            size_total += f.size;
+            if ((size_total / 1024) <= size_limit) {
+                this.setState(state => {
+                    state.file.size += size_total;
+                    state.file.data.push(f);
+                    return { file: state.file }
+                });
+            } else {
+                Swal.fire({ icon: 'error', text: `El limíte máximo es de 2MB, tamaño actual(${(size_total / (1024 * 1024)).toFixed(2)} MB` })
+            }
+        }
+        return false;
+    }
+
+
+
     setErrors = ({ name, message }) => {
         this.setState(state => {
             state.errors[name] = [message];
@@ -49,6 +71,7 @@ class CreateTramite extends Component {
     }
 
     handleFile = async ({ name, files = [] }) => {
+
         if (files && files.length) {
             let formats = ['docx', 'pdf'];
             let limite_size = 1 * 1024;
@@ -68,7 +91,7 @@ class CreateTramite extends Component {
                                 state.errors[name] = [];
                                 return { form: state.form, errors: state.errors }
                             });
-                        } else this.setErrors({ name, message: `El archivo "${file.name}" ya está agregardo. NO SEAS GIL!!!` })
+                        } else this.setErrors({ name, message: `El archivo "${file.name}" ya está agregrado` })
                     } else this.setErrors({ name, message: `El formato es incorrecto, solo *.docx y *.pdf` })
                 } else this.setErrors({ name, message: `El archivo debe pesar como máximo 4MB` })
             }
@@ -170,20 +193,18 @@ class CreateTramite extends Component {
             .catch(err => console.log(err.message));
     }
 
-    deleteFile = (index) => {
+    deleteFile = (index, file) => {
         this.setState(state => {
-            let currentFile = state.form.files.data[index];
-            let size = state.form.files.size - currentFile.size;
-            state.form.files.data.splice(index, 1);
-            state.form.files.size = size;
-            return { form: state.form }
+            state.file.data.splice(index, 1);
+            state.file.size = state.file.size - file.size;
+            return { file: state.file };
         });
     }
 
     saveTramite = async () => {
         this.props.setLoading(true);
         let { person } = this.props;
-        let { form } = this.state;
+        let { form, file } = this.state;
         let data = new FormData;
         // data person
         data.append('person_id', person.id);
@@ -192,7 +213,7 @@ class CreateTramite extends Component {
             if (attr != 'files') data.append(attr, form[attr])
         }
         // add files
-        form.files.data.filter(f => data.append('files', f));
+        file.data.filter(f => data.append('files', f));
         // send data
         await tramite.post('public/tramite', data)
             .then(async res => {
@@ -226,13 +247,13 @@ class CreateTramite extends Component {
 
     render() {
 
-        let { form, dependencias, tramite_types, errors } = this.state;
+        let { form, dependencias, tramite_types, errors, file } = this.state;
 
         return (
             <Card fluid>
                 <Card.Header>
                     <div className="card-body">
-                        <h3 className="">Regístro de Persona</h3>
+                        <h3 className="">Regístro de Tramite</h3>
                     </div>
                 </Card.Header>
                 <Card.Content>
@@ -301,7 +322,7 @@ class CreateTramite extends Component {
                                 />
                                 <label>{ errors.asunto && errors.asunto[0] || "" }</label>
                             </Form.Field>
-                            <Form.Field className="col-md-12" error={ errors.files && errors.files[0] || "" }>
+                            { /*<Form.Field className="col-md-12" error={ errors.files && errors.files[0] || "" }>
                                 <label for="c_fname">Adjuntar Documento <span className="text-danger">*</span></label>
                                 <label htmlFor="files" className="ui button">
                                     <input type="file" id="files" name="files" multiple accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden onChange={ (e) => this.handleFile(e.target) } />
@@ -309,27 +330,40 @@ class CreateTramite extends Component {
                                </label>
                                 <label>{ errors.files && errors.files[0] || "" }</label>
                             </Form.Field>
-                            <Show condicion={ form.files && form.files.data && form.files.data.length }>
-                                <div className="col-md-12">
-                                    { form.files.data.map((f, indexF) =>
-                                        <div className="row">
-                                            <Form.Field className="col-md-10" key={ `file-drop-${indexF}` } >
-                                                <label className="ui button green text-white"  >
-                                                    { `${Math.round(f.size / 1024)}Kb` } | <i className={ `fas fa-file-${f.name.split('.').pop()}` }></i> { f && f.name }
-                                                </label>
-                                            </Form.Field>
+                                <Show condicion={ form.files && form.files.data && form.files.data.length }>
+                                    <div className="col-md-12">
+                                        { form.files.data.map((f, indexF) =>
+                                            <div className="row">
+                                                <Form.Field className="col-md-10" key={ `file-drop-${indexF}` } >
+                                                    <label className="ui button green text-white"  >
+                                                        { `${Math.round(f.size / 1024)}Kb` } | <i className={ `fas fa-file-${f.name.split('.').pop()}` }></i> { f && f.name }
+                                                    </label>
+                                                </Form.Field>
 
-                                            <div className="col-md-2">
-                                                <button className="btn btn-danger"
-                                                    onClick={ (e) => this.deleteFile(indexF) }
-                                                >
-                                                    <i className="far fa-trash-alt"></i>
-                                                </button>
+                                                <div className="col-md-2">
+                                                    <button className="btn btn-danger"
+                                                        onClick={ (e) => this.deleteFile(indexF) }
+                                                    >
+                                                        <i className="far fa-trash-alt"></i>
+                                                    </button>
+                                                </div>
                                             </div>
-                                        </div>
-                                    ) }
-                                </div>
-                            </Show>
+                                        ) }
+                                    </div>
+                                </Show>
+                                        */}
+                            <Form.Field className="col-md-12">
+                                <DropZone id="files"
+                                    name="files"
+                                    onChange={ (e) => this.handleFiles(e) }
+                                    icon="save"
+                                    result={ file.data }
+                                    title="Select. Archivo (*.docx, *.pdf)"
+                                    accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                    onDelete={ (e) => this.deleteFile(e.index, e.file) }
+                                />
+                            </Form.Field>
+
                             <Form.Field className="col-md-12">
                                 <Form.Checkbox label='Declaro bajo penalidad de perjurio, que toda la informacion proporcionada es correcta y verídica' toggle
                                     checked={ form.termino || false }

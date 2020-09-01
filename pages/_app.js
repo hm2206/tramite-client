@@ -4,7 +4,8 @@ import Router from 'next/router';
 import Head from 'next/head';
 import { app } from '../env.json'
 import { TOKEN } from '../services/auth';
-import 'semantic-ui-css/semantic.min.css'
+import 'semantic-ui-css/semantic.min.css';
+import 'react-vertical-timeline-component/style.min.css';
 import '../public/css/timeline.css';
 import Navbar from '../components/navbar';
 import Footer from '../components/footer';
@@ -130,7 +131,7 @@ export default class MyApp extends App {
                         <LoadingGlobal display="block" />
                     </Show>
 
-                    <div className={ `theme-${app.theme || 'default'}` }>
+                    <div className={ `fondo theme-${app.theme || 'default'}` }>
                         <Navbar app={ __app } isLoggin={ isLoggin } logout={ this.logout } />
 
                         <div className={ `mt-5 pt-4` }>

@@ -32,6 +32,9 @@ export default class CreatePerson extends Component {
     componentDidMount = () => {
         this.getDocumentType();
         this.getDepartamentos();
+        this.setState({
+            block: true
+        })
 
     }
 
@@ -170,6 +173,7 @@ export default class CreatePerson extends Component {
         form.cod_dep = state.cod_dep
         form.cod_pro = state.cod_pro
         form.cod_dis = state.cod_dis
+        console.log("hola")
         // send form
         await authentication.post('person', form)
             .then(async res => {
@@ -477,20 +481,13 @@ export default class CreatePerson extends Component {
                                     </Form.Field>
                                 </div>
 
-                                <div className="col-md-12 mt-3">
-                                    <b>
-                                        <input type="checkbox" className="mt-1 mr-2"
-                                            name="condicion"
-                                            onChange={ (e) => {
-                                                let { checked, name } = e.target;
-                                                this.handleInput({ name, value: checked });
-                                            } }
-                                            checked={ form.condicion }
-                                            disabled={ loading }
-                                        />
-                                        <a href="/terminos" target="_blank"><u>Acepto los términos y condiciones</u></a>
-                                    </b>
-                                </div>
+                                <Form.Field className="col-md-12 mt-3">
+                                    <Form.Checkbox label='Declaro bajo penalidad de perjurio, que toda la informacion proporcionada es correcta y verídica' toggle
+                                        checked={ form.condicion || false }
+                                        name="condicion"
+                                        onChange={ (e, obj) => this.handleInput({ name: obj.name, value: obj.checked }) }
+                                    />
+                                </Form.Field>
 
                                 <div className="col-md-12">
                                     <hr />
