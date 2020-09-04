@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { VerticalTimeline, VerticalTimelineElement } from 'react-vertical-timeline-component';
 import { Icon, Table } from 'semantic-ui-react';
 import AddIcon from '@material-ui/icons/Add';
@@ -14,7 +14,7 @@ import { tramite } from '../services/apis';
 import Show from './show';
 import moment from 'moment';
 
-export default class Index extends Component {
+export default class TrackingTimeLine extends Component {
     state = {
         show_file: false,
         tracking: []
@@ -22,7 +22,6 @@ export default class Index extends Component {
 
     componentDidMount = async () => {
         await this.getTracking(1);
-
     }
 
     getTracking = async (page = 1, up = true) => {
@@ -46,8 +45,6 @@ export default class Index extends Component {
                 this.props.setLoading(false);
                 console.log(err.message)
             })
-
-
     }
 
     getMetadata = (status) => {
@@ -65,8 +62,16 @@ export default class Index extends Component {
         return icons[status] || {};
     }
 
+    handleShowFile = (obj, index, estado) => {
+        this.setState(state => {
+            obj.show_file = estado;
+            state.tracking[index] = obj;
+            return { tracking: state.tracking };
+        });
+    }
+
     render() {
-        let { tracking, show_file } = this.state;
+        let { tracking } = this.state;
         let { tramite } = this.props
 
         return (
@@ -89,55 +94,64 @@ export default class Index extends Component {
                     </p>
                 </VerticalTimelineElement >
                 {
-                    tracking.map((e, iter) =>
-                        <VerticalTimelineElement
-                            className="vertical-timeline-element--work"
-                            date={ moment(e.updated_at).lang('es').format('h:mm a') }
-                            contentStyle={ { border: "2px solid rgb(0, 162, 138)", borderRadius: "20px" } }
-                            contentArrowStyle={ { borderRight: '10px solid rgb(0, 162, 138)' } }
-                            iconStyle={ { background: 'rgb(0, 162, 138)' } }
+                    tracking.map((track, iter) =>
+                        <Fragment>
+                            <VerticalTimelineElement
+                                className="vertical-timeline-element--work"
+                                date={ moment(track.updated_at).lang('es').format('h:mm a') }
+                                contentStyle={ { border: "2px solid rgb(0, 162, 138)", borderRadius: "20px" } }
+                                contentArrowStyle={ { borderRight: '10px solid rgb(0, 162, 138)' } }
+                                iconStyle={ { background: 'rgb(0, 162, 138)' } }
 
-                            icon={ this.getMetadata(e.status).icon }
+                                icon={ this.getMetadata(track.status).icon }
 
-                        >
-                            <h3 className="vertical-timeline-element-title">{ this.getMetadata(e.status).name || e.status }</h3>
-                            <h4 className="vertical-timeline-element-subtitle">{ this.getMetadata(e.status).message }<span className="badge badge-dark">{ e && e.dependencia_destino && `${e.dependencia_destino.nombre}`.toUpperCase() }</span></h4>
-                            <hr></hr>
-                            { e && e.description }
-                            <p><button className="btn btn-dark btn-sm" onClick={ (e) => this.setState({ show_file: true }) }>Ver Archivos</button></p>
+                            >
+                                <h3 className="vertical-timeline-element-title">{ this.getMetadata(track.status).name || track.status }</h3>
+                                <h4 className="vertical-timeline-element-subtitle">{ this.getMetadata(track.status).message }<span className="badge badge-dark">{ track && track.dependencia_destino && `${track.dependencia_destino.nombre}`.toUpperCase() }</span></h4>
+                                <hr></hr>
+                                { track && track.description }
 
+                                <Show condicion={track.files && track.files.length}>
+                                    <p>
+                                        <button className="btn btn-dark btn-sm" onClick={ (event) => this.handleShowFile(track, iter, true) }>Ver Archivos</button>
+                                    </p>
+                                </Show>
 
+                                <p>
+                                    { moment(track.updated_at).lang('es').format('LL') }
+                                </p>
+                            </VerticalTimelineElement>
+                            {/* mostrar files */}
+                            <Show condicion={track.show_file == true}>
+                                <VerArchivo 
+                                    header="Visualizador de archivos del Seguimiento"
+                                    onClose={(event) =>  this.handleShowFile(track, iter, false)}
+                                >
+                                    <Table celled>
+                                        <Table.Header>
+                                            <Table.Row>
+                                                <Table.HeaderCell>Nombre</Table.HeaderCell>
+                                                <Table.HeaderCell>Descargar</Table.HeaderCell>
 
-                            <p>
-                                { moment(e.updated_at).lang('es').format('LL') }
-                            </p>
-                        </VerticalTimelineElement>)
+                                            </Table.Row>
+                                        </Table.Header>
+                                        <Table.Body>
+                                            { track && track.files.map(f =>
+                                                <Table.Row>
+                                                    <Table.Cell>{ `${f}`.split('/').pop() }</Table.Cell>
+                                                    <Table.Cell>
+                                                        <a target="_blank" href={ f }>ver</a>
+                                                    </Table.Cell>
+
+                                                </Table.Row>
+                                            ) }
+                                        </Table.Body>
+
+                                    </Table>
+                                </VerArchivo>
+                            </Show>
+                        </Fragment>)
                 }
-                <Show condicion={ show_file }>
-                    <VerArchivo header="Visualizador de archivos" onClose={ (e) => this.setState({ show_file: false }) } >
-                        <Table celled>
-                            <Table.Header>
-                                <Table.Row>
-                                    <Table.HeaderCell>Nombre</Table.HeaderCell>
-                                    <Table.HeaderCell>Descargar</Table.HeaderCell>
-
-                                </Table.Row>
-                            </Table.Header>
-                            <Table.Body>
-                                { tracking.map((e, iter) =>
-                                    <Table.Row>
-                                        <Table.Cell>{ `${e.files}`.split('/').pop() }</Table.Cell>
-                                        <Table.Cell>
-                                            <a target="_blank" href={ e.files }>ver</a>
-                                        </Table.Cell>
-
-                                    </Table.Row>
-                                ) }
-                            </Table.Body>
-
-                        </Table>
-                    </VerArchivo>
-                </Show>
             </VerticalTimeline >
         )
     }
