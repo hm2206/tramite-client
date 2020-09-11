@@ -68,35 +68,24 @@ class CreateTramite extends Component {
         });
     }
 
-    handleFile = async ({ name, files = [] }) => {
-
-        if (files && files.length) {
-            let formats = ['docx', 'pdf'];
-            let limite_size = 1 * 1024;
-            let current_size = this.state.form.files.size || 0;
-            for (let file of files) {
-                let filename = file.name;
-                current_size += file.size;
-                // validar peso
-                if (limite_size >= (current_size / 1024)) {
-                    //validar formato
-                    if (formats.includes(`${filename}`.split('.').pop())) {
-                        //validar nombre del archivo
-                        if (!this.fileExists(name, file.name)) {
-                            this.setState(state => {
-                                state.form[name].data.push(file);
-                                state.form[name].size = current_size;
-                                state.errors[name] = [];
-                                return { form: state.form, errors: state.errors }
-                            });
-                        } else this.setErrors({ name, message: `El archivo "${file.name}" ya está agregrado` })
-                    } else this.setErrors({ name, message: `El formato es incorrecto, solo *.docx y *.pdf` })
-                } else this.setErrors({ name, message: `El archivo debe pesar como máximo 4MB` })
+    handleFiles = ({ files }) => {
+        let { file } = this.state;
+        let size_total = file.size;
+        let size_limit = 2 * 1024;
+        for (let f of files) {
+            size_total += f.size;
+            if ((size_total / 1024) <= size_limit) {
+                this.setState(state => {
+                    state.file.size = size_total;
+                    state.file.data.push(f);
+                    return { file: state.file }
+                });
+            } else {
+                size_total = size_total - f.size;
+                Swal.fire({ icon: 'error', text: `El limíte máximo es de 2MB, tamaño actual(${(size_total / (1024 * 1024)).toFixed(2)}MB)` });
+                return false;
             }
         }
-        // eliminar memoria del input file
-        let selectFile = document.getElementById(name);
-        selectFile.value = null;
     }
 
     fileExists = (name, nameFile) => {
