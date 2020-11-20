@@ -2,15 +2,9 @@ import React, { Component } from 'react';
 import Link from 'next/link';
 import Router from 'next/router';
 import Show from '../components/show';
-import { Button } from 'semantic-ui-react'
+import env from '../env.json';
 
 export default class Navbar extends Component {
-
-    logout = async () => {
-        await Cookies.remove('convocatoria_auth');
-        // history.go('/');
-        alert('remove');
-    }
 
     render() {
 
@@ -29,28 +23,20 @@ export default class Navbar extends Component {
                 <div className="collapse navbar-collapse" id="navbarCollapse">
                     <ul className="navbar-nav mr-auto">
 
-
+            
                     </ul>
                     <div className="form-inline mt-2 mt-md-0">
-
-
-
-
-                        <Link href="/">
+                        <Link href={`${env.app.asset_prefix}`}>
                             <a className="btn mr-2">
                                 Consulta
                             </a>
-
                         </Link>
 
-
                         <button className="btn btn-outline ml-3"
-                            onClick={ (e) => Router.push('/register') }
+                            onClick={ (e) => Router.push(`${env.app.asset_prefix}register`) }
                         >
                             <i className="fas fa-file-word"></i>  Trámite
                         </button>
-
-
                     </div>
                 </div>
             </nav >

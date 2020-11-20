@@ -2,7 +2,7 @@ body {
   min-height: 100vh;
   height: 100%;
   padding-top: 4.5rem;
-  background-image: url('/images/grisclaro.png')!important;
+  background-image: url('../images/grisclaro.png')!important;
   background-position: center!important;
   background-size: contain!important;
   background-repeat: repeat!important;

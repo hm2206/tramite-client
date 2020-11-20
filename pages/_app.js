@@ -117,7 +117,6 @@ export default class MyApp extends App {
                     <link rel="stylesheet" href={`${app.asset_prefix}font-awesome/css/all.min.css`} media="all" />
                     <link rel="stylesheet" type="text/css" href={`${app.asset_prefix}css/app.css`} />
                     <link rel="stylesheet" type="text/css" href={`${app.asset_prefix}css/page_loading.css`} />
-                    {/* <link rel="stylesheet" type="text/css" href="/css/DropZone.css" /> */ }
                 </Head>
 
                 <LoadingGlobal display="none" id="loading-brand" />
