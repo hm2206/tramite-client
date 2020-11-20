@@ -108,15 +108,15 @@ export default class MyApp extends App {
                     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
                     <meta name="description" content="Convocatoria de trabajos" />
                     <meta name="viewport" content="width=device-width, initial-scale=1" />
-                    <link rel="shortcut icon" type="image/x-icon" href={ __app.icon || '/img/loading_page.png' }></link>
+                    <link rel="shortcut icon" type="image/x-icon" href={ __app.icon || `${app.asset_prefix}img/loading_page.png` }></link>
                     {/* embedido */ }
-                    <link rel="stylesheet" href="/css/bootstrap.css" />
+                    <link rel="stylesheet" href={`${app.asset_prefix}css/bootstrap.css`} />
                     {/* styles themplate */ }
                     <link rel="stylesheet" id="google-fonts-1-css" href="https://fonts.googleapis.com/css?family=Roboto%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic&amp;ver=5.4.1" type="text/css" media="all" />
                     {/* styles para el preloader de la página */ }
-                    <link rel="stylesheet" href="/font-awesome/css/all.min.css" media="all" />
-                    <link rel="stylesheet" type="text/css" href="/css/app.css" />
-                    <link rel="stylesheet" type="text/css" href="/css/page_loading.css" />
+                    <link rel="stylesheet" href={`${app.asset_prefix}font-awesome/css/all.min.css`} media="all" />
+                    <link rel="stylesheet" type="text/css" href={`${app.asset_prefix}css/app.css`} />
+                    <link rel="stylesheet" type="text/css" href={`${app.asset_prefix}css/page_loading.css`} />
                     {/* <link rel="stylesheet" type="text/css" href="/css/DropZone.css" /> */ }
                 </Head>
 
