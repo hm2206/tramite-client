@@ -270,9 +270,9 @@ export default class CreatePerson extends Component {
 
                             <Show condicion={ !this.state.is_search }>
                                 <div className="col-md-6 mb-2">
-                                    <Form.Field error={ errors.document_type && errors.document_type[0] }>
+                                    <Form.Field error={ errors.document_type_id && errors.document_type_id[0] }>
                                         <label className="text-muted">Tip. Documento <b className="text-danger">*</b></label>
-                                        <select name="document_type" value={ form.document_type || "" }
+                                        <select name="document_type_id" value={ form.document_type_id || "" }
                                             onChange={ (e) => this.handleInput(e.target) }
                                             disabled={ loading || block }
                                         >

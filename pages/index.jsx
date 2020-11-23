@@ -6,12 +6,14 @@ import InfoTramite from '../components/infoTramite'
 
 import { findTramite } from '../services/request/tramite';
 import dynamic from 'next/dynamic'
-const TimeLine = dynamic(() => import('../components/TimeLine'), { ssr: false });
+// const TimeLine = dynamic(() => import('../components/TimeLine'), { ssr: false });
+import TimeLine from '../components/TimeLine'
 export default class Index extends Component {
 
     static getInitialProps = async (ctx) => {
         let { query, pathname } = ctx;
         let { tramite, success } = await findTramite(ctx);
+        // console.log(tramite, '<-  hola ')
         return { query, pathname, tramite, success };
     }
 
@@ -30,9 +32,14 @@ export default class Index extends Component {
     }
 
     handleSearch = () => {
-        let { push, pathname, query } = Router;
-        query.slug = this.state.slug;
-        push({ pathname, query });
+        try {
+            let { push, pathname, query } = Router;
+            query.slug = this.state.slug;
+            push({ pathname, query });  
+        } catch (error) {
+            console.log(error)
+        }
+
     }
 
     handleInput = ({ name, value }) => {
@@ -53,27 +60,27 @@ export default class Index extends Component {
                             <Input placeholder='Ingrese Codigo de Tramite'
                                 fluid className="select-convocatoria"
                                 name="slug"
-                                value={ slug }
-                                onChange={ (e, obj) => this.handleInput(obj) }
+                                value={slug}
+                                onChange={(e, obj) => this.handleInput(obj)}
                             />
                         </div>
                         <div className="col-md-3 mb-1">
                             <Button className="btn-convocatoria" fluid
-                                onClick={ (e) => this.handleSearch() }
+                                onClick={(e) => this.handleSearch()}
                             >
                                 <i className="fas fa-search"></i> Buscar
                             </Button>
                         </div>
 
-                        <Show condicion={ success }>
+                        <Show condicion={success}>
                             <div className="col-md-12  text-center ">
                                 <div className="row">
                                     <div className="col-md-12">
-                                        <InfoTramite tramite={ tramite } />
+                                        <InfoTramite tramite={tramite} />
                                     </div>
 
                                     <div className="col-md-12 mt-4">
-                                        <TimeLine tramite={ tramite } { ...this.props } />
+                                        <TimeLine tramite={tramite} {...this.props} />
                                     </div>
                                 </div>
                             </div>
