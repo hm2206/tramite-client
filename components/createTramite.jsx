@@ -187,6 +187,7 @@ class CreateTramite extends Component {
         await tramite.post('code_verify', {
             person_id: person.id || "_error"
         }).then(async res => {
+            // console.log(res.data)
             this.props.setLoading(false);
             let { success, message } = res.data;
             if (!success) throw new Error(message);
@@ -263,15 +264,15 @@ class CreateTramite extends Component {
                 <Card.Content>
                     <Form >
                         <div className="form-group row">
-                            <Form.Field className="col-md-12" error={ errors.entity_id && errors.entity_id[0] || "" }>
+                            <Form.Field className="col-md-12" error={errors.entity_id && errors.entity_id[0] || ""}>
                                 <label for="c_fname">Código de Verificación <span className="text-danger">*</span></label>
                                 <div className="row">
                                     <div className="col-md-10">
                                         <input
                                             placeholder="Ingrese el código de 8 cífras"
-                                            value={ form.code || "" }
+                                            value={form.code || ""}
                                             name="code"
-                                            onChange={ (e) => this.handleInput(e.target) }
+                                            onChange={(e) => this.handleInput(e.target)}
                                         />
                                     </div>
 
@@ -283,90 +284,90 @@ class CreateTramite extends Component {
                                         </button>
                                     </div>
                                 </div>
-                                <label htmlFor="">{ errors.entity_id && errors.entity_id[0] || "" }</label>
+                                <label htmlFor="">{errors.entity_id && errors.entity_id[0] || ""}</label>
                             </Form.Field>
 
-                            <Form.Field className="col-md-12" error={ errors.entity_id && errors.entity_id[0] || "" }>
+                            <Form.Field className="col-md-12" error={errors.entity_id && errors.entity_id[0] || ""}>
                                 <label for="c_fname">Entidad <span className="text-danger">*</span></label>
                                 <Form.Select
                                     placeholder="Seleccione la Entidad"
-                                    options={ this.state.entities }
-                                    value={ form.entity_id || "" }
+                                    options={this.state.entities}
+                                    value={form.entity_id || ""}
                                     name="entity_id"
-                                    onChange={ (e, obj) => this.handleInput(obj) }
+                                    onChange={(e, obj) => this.handleInput(obj)}
                                 />
-                                <label htmlFor="">{ errors.entity_id && errors.entity_id[0] || "" }</label>
+                                <label htmlFor="">{errors.entity_id && errors.entity_id[0] || ""}</label>
                             </Form.Field>
-                            <Form.Field className="col-md-6" error={ errors.dependencia_id && errors.dependencia_id[0] || "" }>
+                            <Form.Field className="col-md-6" error={errors.dependencia_id && errors.dependencia_id[0] || ""}>
                                 <label for="c_fname">Destino del Documento <span className="text-danger">*</span></label>
                                 <Form.Select
                                     placeholder="Seleccione la Procedencia"
                                     name="dependencia_id"
-                                    options={ dependencias }
-                                    value={ form.dependencia_id || "" }
-                                    onChange={ (e, obj) => this.handleInput(obj) }
+                                    options={dependencias}
+                                    value={form.dependencia_id || ""}
+                                    onChange={(e, obj) => this.handleInput(obj)}
                                 />
-                                <label htmlFor="">{ errors.dependencia_id && errors.dependencia_id[0] || "" }</label>
+                                <label htmlFor="">{errors.dependencia_id && errors.dependencia_id[0] || ""}</label>
                             </Form.Field>
-                            <Form.Field className="col-md-6" error={ errors.tramite_type_id && errors.tramite_type_id[0] || "" } >
+                            <Form.Field className="col-md-6" error={errors.tramite_type_id && errors.tramite_type_id[0] || ""} >
                                 <label for="c_fname">Tipo del Documento <span className="text-danger">*</span></label>
                                 <Form.Select
                                     placeholder="Seleccione el Tipo de Documento"
-                                    options={ tramite_types }
+                                    options={tramite_types}
                                     name="tramite_type_id"
-                                    value={ form.tramite_type_id || "" }
-                                    onChange={ (e, obj) => this.handleInput(obj) }
+                                    value={form.tramite_type_id || ""}
+                                    onChange={(e, obj) => this.handleInput(obj)}
                                 />
-                                <label htmlFor="">{ errors.tramite_type_id && errors.tramite_type_id[0] || "" }</label>
+                                <label htmlFor="">{errors.tramite_type_id && errors.tramite_type_id[0] || ""}</label>
                             </Form.Field>
-                            <Form.Field className="col-md-6" error={ errors.document_number && errors.document_number[0] || "" } >
+                            <Form.Field className="col-md-6" error={errors.document_number && errors.document_number[0] || ""} >
                                 <label for="c_fname">N° Documento <span className="text-danger">*</span></label>
                                 <input
                                     type="text"
                                     name="document_number"
-                                    value={ form.document_number || "" }
-                                    onChange={ (e) => this.handleInput(e.target) }
+                                    value={form.document_number || ""}
+                                    onChange={(e) => this.handleInput(e.target)}
                                 />
-                                <label>{ errors.document_number && errors.document_number[0] || "" }</label>
+                                <label>{errors.document_number && errors.document_number[0] || ""}</label>
                             </Form.Field>
-                            <Form.Field className="col-md-6" error={ errors.folio_count && errors.folio_count[0] || "" }>
+                            <Form.Field className="col-md-6" error={errors.folio_count && errors.folio_count[0] || ""}>
                                 <label for="c_fname">N° Folios <span className="text-danger">*</span></label>
                                 <input
                                     type="text"
                                     name="folio_count"
-                                    value={ form.folio_count || "" }
-                                    onChange={ (e) => this.handleInput(e.target) }
+                                    value={form.folio_count || ""}
+                                    onChange={(e) => this.handleInput(e.target)}
                                 />
-                                <label>{ errors.folio_count && errors.folio_count[0] || "" }</label>
+                                <label>{errors.folio_count && errors.folio_count[0] || ""}</label>
                             </Form.Field>
-                            <Form.Field className="col-md-12" error={ errors.asunto && errors.asunto[0] || "" }>
+                            <Form.Field className="col-md-12" error={errors.asunto && errors.asunto[0] || ""}>
                                 <label for="c_fname">Asunto del Tramite <span className="text-danger">*</span></label>
                                 <TextArea
                                     type="text"
                                     name="asunto"
-                                    value={ form.asunto || "" }
-                                    onChange={ (e) => this.handleInput(e.target) }
+                                    value={form.asunto || ""}
+                                    onChange={(e) => this.handleInput(e.target)}
                                 />
-                                <label>{ errors.asunto && errors.asunto[0] || "" }</label>
+                                <label>{errors.asunto && errors.asunto[0] || ""}</label>
                             </Form.Field>
 
                             <Form.Field className="col-md-12">
                                 <DropZone id="files"
                                     name="files"
-                                    onChange={ (e) => this.handleFiles(e) }
+                                    onChange={(e) => this.handleFiles(e)}
                                     icon="save"
-                                    result={ file.data }
+                                    result={file.data}
                                     title="Select. Archivo (*.docx, *.pdf)"
                                     accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                                    onDelete={ (e) => this.deleteFile(e.index, e.file) }
+                                    onDelete={(e) => this.deleteFile(e.index, e.file)}
                                 />
                             </Form.Field>
 
                             <Form.Field className="col-md-12">
                                 <Form.Checkbox label='Declaro bajo penalidad de perjurio, que toda la informacion proporcionada es correcta y verídica' toggle
-                                    checked={ form.termino || false }
+                                    checked={form.termino || false}
                                     name="termino"
-                                    onChange={ (e, obj) => this.handleInput({ name: obj.name, value: obj.checked }) }
+                                    onChange={(e, obj) => this.handleInput({ name: obj.name, value: obj.checked })}
                                 />
                             </Form.Field>
 
@@ -378,8 +379,8 @@ class CreateTramite extends Component {
                                 <hr />
 
                                 <Button color="teal"
-                                    onClick={ this.saveTramite }
-                                    disabled={ !this.formValidation() }
+                                    onClick={this.saveTramite}
+                                    disabled={!this.formValidation()}
                                 >
                                     Registrar
                                 </Button>
