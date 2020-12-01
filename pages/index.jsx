@@ -13,11 +13,21 @@ const index = (props) => {
 
     const [slug, setslug] = useState("");
     const [lenght, setlenght] = useState(0);
-    let { success, tramite } = props
+    let { success, tramite, query } = props
+    // useEffect(() => {
+    //     if (!(tramite == undefined)) {
+    //         setting()
+    //         message(success)
+    //     }
+    //     console.log(tramite)
+    // }, [tramite]);
     useEffect(() => {
-        setting()
-        message(success)
-    }, [success]);
+        if (query.slug) {
+            // console.log('aea')
+            setting()
+            message(success)
+        }
+    }, [query.slug]);
     const message = async (success) => {
         if (success) {
             await Swal.fire({ text: 'Tramite encontrado', icon: 'success' })
