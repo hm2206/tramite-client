@@ -101,7 +101,7 @@ const TimeLine = ({ tramite, setLoading }) => {
             </VerticalTimelineElement >
             {
                 trackingg.map((track, iter) =>
-                    <Fragment>
+                    <Fragment key={iter}>
                         <VerticalTimelineElement
                             className="vertical-timeline-element--work"
                             date={moment(track.updated_at).lang('es').format('h:mm a')}
@@ -142,8 +142,8 @@ const TimeLine = ({ tramite, setLoading }) => {
                                         </Table.Row>
                                     </Table.Header>
                                     <Table.Body>
-                                        {track && track.files.map(f =>
-                                            <Table.Row>
+                                        {track && track.files.map((f, i) =>
+                                            <Table.Row key={i}>
                                                 <Table.Cell>{`${f}`.split('/').pop()}</Table.Cell>
                                                 <Table.Cell>
                                                     <a target="_blank" href={f}>ver</a>

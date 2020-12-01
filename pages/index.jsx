@@ -1,96 +1,104 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import { Form, Button, Input } from 'semantic-ui-react';
 import Show from '../components/show';
 import Router from 'next/router';
 import InfoTramite from '../components/infoTramite'
-
+import Swal from 'sweetalert2'
 import { findTramite } from '../services/request/tramite';
 import dynamic from 'next/dynamic'
-// const TimeLine = dynamic(() => import('../components/TimeLine'), { ssr: false });
 import TimeLine from '../components/TimeLine'
-export default class Index extends Component {
+// const TimeLine = dynamic(() => import('../components/TimeLine'), { ssr: false });
 
-    static getInitialProps = async (ctx) => {
-        let { query, pathname } = ctx;
-        let { tramite, success } = await findTramite(ctx);
-        // console.log(tramite, '<-  hola ')
-        return { query, pathname, tramite, success };
+const index = (props) => {
+
+    const [slug, setslug] = useState("");
+    const [lenght, setlenght] = useState(0);
+    let { success, tramite } = props
+    useEffect(() => {
+        setting()
+        message(success)
+    }, [success]);
+    const message = async (success) => {
+        if (success) {
+            await Swal.fire({ text: 'Tramite encontrado', icon: 'success' })
+        } else {
+            await Swal.fire({ text: 'Tramite no encontrado', icon: 'error' })
+
+        }
+    }
+    const setting = async () => {
+
+        setslug(props.query && props.query.slug || slug)
+        setlenght(await parseFloat(props.query && props.query.lenght || lenght))
     }
 
-    state = {
-        slug: ""
-    };
+    const handleSearch = () => {
 
-    componentDidMount = () => {
-        this.setting();
-    }
-
-    setting = () => {
-        this.setState((state, props) => ({
-            slug: props.query && props.query.slug || state.slug
-        }));
-    }
-
-    handleSearch = () => {
         try {
             let { push, pathname, query } = Router;
-            query.slug = this.state.slug;
-            push({ pathname, query });  
+            query.slug = slug;
+            query.lenght = lenght;
+            push({ pathname, query });
         } catch (error) {
             console.log(error)
         }
 
     }
 
-    handleInput = ({ name, value }) => {
-        this.setState({ [name]: value })
+    const handleInput = ({ value }) => {
+        setslug(value)
+        setlenght(value.length)
+
     }
 
-    render() {
+    return (
 
-        let { slug } = this.state;
-        let { success, tramite } = this.props;
-
-        return (
-
-            <div className="container mt-5" >
-                <Form>
-                    <div className="row">
-                        <div className="col-md-9 col-12 mb-1">
-                            <Input placeholder='Ingrese Codigo de Tramite'
-                                fluid className="select-convocatoria"
-                                name="slug"
-                                value={slug}
-                                onChange={(e, obj) => this.handleInput(obj)}
-                            />
-                        </div>
-                        <div className="col-md-3 mb-1">
-                            <Button className="btn-convocatoria" fluid
-                                onClick={(e) => this.handleSearch()}
-                            >
-                                <i className="fas fa-search"></i> Buscar
+        <div className="container mt-5" >
+            <Form>
+                <div className="row">
+                    <div className="col-md-9 col-12 mb-1">
+                        <Input placeholder='Ingrese Codigo de Tramite'
+                            fluid className="select-convocatoria"
+                            name="slug"
+                            value={slug}
+                            onChange={(e, obj) => handleInput(obj)}
+                        />
+                    </div>
+                    <div className="col-md-3 mb-1">
+                        <Button className="btn-convocatoria" fluid disabled={lenght < 10}
+                            onClick={(e) => handleSearch()}
+                        >
+                            <i className="fas fa-search"></i> Buscar
                             </Button>
-                        </div>
+                    </div>
 
-                        <Show condicion={success}>
-                            <div className="col-md-12  text-center ">
-                                <div className="row">
-                                    <div className="col-md-12">
-                                        <InfoTramite tramite={tramite} />
-                                    </div>
+                    <Show condicion={success}>
+                        <div className="col-md-12  text-center ">
+                            <div className="row">
+                                <div className="col-md-12">
+                                    <InfoTramite tramite={tramite} />
+                                </div>
 
-                                    <div className="col-md-12 mt-4">
-                                        <TimeLine tramite={tramite} {...this.props} />
-                                    </div>
+                                <div className="col-md-12 mt-4">
+                                    <TimeLine tramite={tramite} {...props} />
                                 </div>
                             </div>
+                        </div>
 
-                        </Show>
+                    </Show>
 
-                    </div>
-                </Form>
-            </div >
-        )
-    }
 
+                </div>
+            </Form>
+        </div >
+
+    );
 }
+
+index.getInitialProps = async (ctx) => {
+    let { query, pathname } = ctx;
+    let { tramite, success } = await findTramite(ctx);
+    return { query, pathname, tramite, success };
+}
+
+export default index;
