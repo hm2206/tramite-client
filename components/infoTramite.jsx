@@ -103,7 +103,7 @@ export default class infoTramite extends Component {
                             <Table.Row >
                                 <Table.Cell><i className="far fa-file-alt"></i> Archivo</Table.Cell>
                                 <Table.Cell>
-                                    <button className="btn btn-dark btn-sm" onClick={(e) => this.setState({ show_file: true })}>Ver Archivos</button>
+                                    <button className="btn btn-dark btn-sm" onClick={(e) => this.setState({ show_file: true })}><Icon name="file pdf" />Ver Archivos</button>
                                 </Table.Cell>
                             </Table.Row>
                         </Table.Body>
@@ -129,7 +129,7 @@ export default class infoTramite extends Component {
                                     <Table.Row key={iter}>
                                         <Table.Cell>{`${e}`.split('/').pop()}</Table.Cell>
                                         <Table.Cell>
-                                            <a target="_blank" href={e}>ver</a>
+                                            <a target="_blank" href={e}><Icon name="file pdf outline" />ver</a>
                                         </Table.Cell>
 
                                     </Table.Row>
