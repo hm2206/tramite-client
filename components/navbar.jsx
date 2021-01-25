@@ -37,12 +37,12 @@ export default function Navbar({ app, isLoggin }) {
             <a className="btn mr-2">Consulta</a>
           </Link>
 
-          <button
+          {/* <button
             className="btn btn-outline ml-3"
             onClick={(e) => Router.push(`${env.app.asset_prefix}register`)}
           >
             <i className="fas fa-file-word"></i> Trámite
-          </button>
+          </button> */}
         </div>
       </div>
     </nav>

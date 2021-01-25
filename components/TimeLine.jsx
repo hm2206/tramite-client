@@ -113,30 +113,6 @@ const TimeLine = ({ trackings, setLoading }) => {
   };
   return (
     <VerticalTimeline>
-      {/* <VerticalTimelineElement
-        className="vertical-timeline-element--work"
-        date={moment(tramite.created_at).lang("es").format("h:mm a")}
-        contentStyle={{
-          border: "2px solid rgb(0, 162, 138)",
-          borderRadius: "20px",
-        }}
-        contentArrowStyle={{ borderRight: "10px solid rgb(0, 162, 138)" }}
-        iconStyle={{ background: "rgb(0, 162, 138)" }}
-        icon={<SendRoundedIcon style={{ color: "#fff" }} />}
-      >
-        <h3 className="vertical-timeline-element-title">ENVIADO</h3>
-        <h4 className="vertical-timeline-element-subtitle">
-          {" "}
-          Lugar de destino:{" "}
-          <span className="badge badge-dark mr-1">
-            {`${
-              tramite.dependencia && tramite.dependencia.nombre
-            }`.toUpperCase()}
-          </span>
-        </h4>
-
-        <p>{moment(tramite.created_at).lang("es").format("LL")}</p>
-      </VerticalTimelineElement> */}
       {trackingg.map((track, iter) => (
         <Fragment key={iter}>
           <VerticalTimelineElement
