@@ -82,7 +82,7 @@ const index = (props) => {
                   <InfoTramite tramite={tramite} />
                 </div>
 
-                <div className="col-md-3 col-lg-2 mt-4">
+                <div className="col-md-3 col-lg-2 mt-4 col-6">
                   <img
                     src={img || ""}
                     style={{
