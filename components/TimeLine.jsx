@@ -3,8 +3,7 @@ import {
   VerticalTimeline,
   VerticalTimelineElement,
 } from "react-vertical-timeline-component";
-import { Icon, Table } from "semantic-ui-react";
-import AddIcon from "@material-ui/icons/Add";
+import { Form, Icon, Table } from "semantic-ui-react";
 import SendRoundedIcon from "@material-ui/icons/SendRounded";
 import CallMissedOutgoingRoundedIcon from "@material-ui/icons/CallMissedOutgoingRounded";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
@@ -18,12 +17,15 @@ import Show from "./show";
 import moment from "moment";
 import CreateIcon from "@material-ui/icons/Create";
 import SearchIcon from "@material-ui/icons/Search";
+import InfoTramite from "./infoTramite";
 
 const tra = tramite;
 
 const TimeLine = ({ trackings, setLoading }) => {
   const [show_file, setshow_file] = useState(false);
   const [trackingg, settracking] = useState(trackings.data);
+  const [current_tramite, setCurrentTramite] = useState({});
+  const [option, setOption] = useState("");
 
   useEffect(() => {
     // console.log(trackingg);
@@ -101,16 +103,12 @@ const TimeLine = ({ trackings, setLoading }) => {
   };
 
   const handleShowFile = (obj, index, estado) => {
-    // this.setState(state => {
-    //     obj.show_file = estado;
-    //     state.tracking[index] = obj;
-    //     return { tracking: state.tracking };
-    // });
     obj.show_file = estado;
     let newTracking = JSON.parse(JSON.stringify(trackingg));
     newTracking[index] = obj;
     settracking(newTracking);
   };
+
   return (
     <VerticalTimeline>
       {trackingg.map((track, iter) => (
@@ -152,6 +150,17 @@ const TimeLine = ({ trackings, setLoading }) => {
             </Show>
 
             <p>{moment(track.updated_at).lang("es").format("LL")}</p>
+
+            <Show condicion={Object.keys(track.tramite || {}).length}>
+                <button className="btn btn-outline-primary mt-2"
+                  onClick={(e) => {
+                    setCurrentTramite(track.tramite)
+                    setOption('INFO')
+                  }}
+                >
+                    Información
+                </button>
+            </Show>
           </VerticalTimelineElement>
 
           {/* mostrar files */}
@@ -187,6 +196,80 @@ const TimeLine = ({ trackings, setLoading }) => {
           </Show>
         </Fragment>
       ))}
+      {/* mostra más información del tracking */}
+      <Show condicion={option == 'INFO'}>
+        <VerArchivo header="Información del trámite"
+          onClose={(e) => setOption('')}
+        >
+          <div className="text-left">
+            <Form.Field className="mb-3">
+              <label htmlFor="">Dependencia Origen</label>
+              <input className="capitalize" 
+                type="text" 
+                readOnly 
+                value={current_tramite.dependencia_origen && current_tramite.dependencia_origen.nombre || ""}
+              />
+            </Form.Field>
+
+            <Form.Field className="mb-3">
+              <label htmlFor="">Tipo Documento</label>
+              <input type="text" 
+                readOnly 
+                value={current_tramite.tramite_type && current_tramite.tramite_type.description || ""}
+              />
+            </Form.Field>
+
+            <Form.Field className="mb-3">
+              <label htmlFor="">N° Documento</label>
+              <input type="text"
+                readOnly 
+                value={current_tramite.document_number || ""}
+              />
+            </Form.Field>
+
+            <Form.Field className="mb-3">
+              <label htmlFor="">Asunto</label>
+              <textarea rows="3"
+                readOnly 
+                value={current_tramite.asunto || ""}
+              />
+            </Form.Field>
+
+            <Form.Field className="mb-3">
+              <label htmlFor="">N° Folio</label>
+              <input type="text"
+                readOnly 
+                value={current_tramite.folio_count || ""}
+              />
+            </Form.Field>
+
+            <Form.Field className="mb-3">
+              <label htmlFor="">Observación</label>
+              <textarea rows="3"
+                readOnly 
+                value={current_tramite.observation || ""}
+              />
+            </Form.Field>
+
+            <hr/>
+            <i className="fas fa-file-alt"></i> Archivos
+            <hr/>
+
+            {/* archivos */}
+            <Show condicion={current_tramite.files && current_tramite.files.length || false}>
+              {current_tramite.files.map((f, indexF) => 
+                <a href={f.url} 
+                  key={`list-file-${indexF}`} 
+                  className="card card-body"
+                  target="__blank"
+                >
+                  {f.name}
+                </a>
+              )}
+            </Show>
+          </div>
+        </VerArchivo>
+      </Show>
     </VerticalTimeline>
   );
 };

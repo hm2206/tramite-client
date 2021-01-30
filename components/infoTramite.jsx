@@ -1,11 +1,10 @@
 import React, { Component, Fragment, useState } from "react";
 import { Table, Icon } from "semantic-ui-react";
 import VerArchivos from "./VerArchivos";
-import { tramite } from "../services/apis";
 import SearchIcon from "@material-ui/icons/Search";
 import Show from "./show";
 
-export default function infoTramite({ tramite }) {
+export default function InfoTramite({ tramite }) {
   const [show_file, setshow_file] = useState(false);
   let { files } = tramite;
   return (
@@ -156,18 +155,20 @@ export default function infoTramite({ tramite }) {
             </Table.Header>
 
             <Table.Body>
-              {files.map((e, iter) => (
-                <Table.Row key={iter}>
-                  <Table.Cell>
-                    {`${e.name}`} <Icon name="file pdf outline" />
-                  </Table.Cell>
-                  <Table.Cell>
-                    <a target="_blank" href={e.url}>
-                      <SearchIcon />
-                    </a>
-                  </Table.Cell>
-                </Table.Row>
-              ))}
+              <Show condicion={files && files.length || false}>
+                {files.map((e, iter) => (
+                  <Table.Row key={iter}>
+                    <Table.Cell>
+                      {`${e.name}`} <Icon name="file pdf outline" />
+                    </Table.Cell>
+                    <Table.Cell>
+                      <a target="_blank" href={e.url}>
+                        <SearchIcon />
+                      </a>
+                    </Table.Cell>
+                  </Table.Row>
+                ))}
+              </Show>
             </Table.Body>
           </Table>
         </VerArchivos>
