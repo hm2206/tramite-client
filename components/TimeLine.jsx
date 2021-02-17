@@ -257,7 +257,7 @@ const TimeLine = ({ trackings, setLoading }) => {
 
             {/* archivos */}
             <Show condicion={current_tramite.files && current_tramite.files.length || false}>
-              {current_tramite.files.map((f, indexF) => 
+              {current_tramite && current_tramite.files ? current_tramite.files.map((f, indexF) => 
                 <a href={f.url} 
                   key={`list-file-${indexF}`} 
                   className="card card-body"
@@ -265,7 +265,7 @@ const TimeLine = ({ trackings, setLoading }) => {
                 >
                   {f.name}
                 </a>
-              )}
+              ): null}
             </Show>
           </div>
         </VerArchivo>
