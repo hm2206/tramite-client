@@ -18,47 +18,25 @@ import moment from "moment";
 import CreateIcon from "@material-ui/icons/Create";
 import SearchIcon from "@material-ui/icons/Search";
 import InfoTramite from "./infoTramite";
+const api_tramite = tramite;
 
-const tra = tramite;
+moment().locale('es');
 
-const TimeLine = ({ trackings, setLoading }) => {
-  const [show_file, setshow_file] = useState(false);
-  const [trackingg, settracking] = useState(trackings.data);
-  const [current_tramite, setCurrentTramite] = useState({});
-  const [option, setOption] = useState("");
+const options = {
+  FILE: 'file[show]',
+  INFO: 'info[show]',
+  TRAMITE: 'tramite[show]',
+};
 
-  useEffect(() => {
-    // console.log(trackingg);
-  }, []);
+const ItemLine = ({ tracking, onClick = null }) => {
 
-  // const getTracking = async (page = 1, up = true) => {
-  //     setLoading(true);
+  // props
+  let { dependencia, person, tramite, info } = tracking;
 
-  //     // console.log(slug)
-  //     await tra.get(`public/tramite/${slug}/tracking?page=${page}`)
-  //         .then(async res => {
-  //             setLoading(false);
-  //             // console.log(res.data.tracking.data)
-  //             let { success, message, tracking } = res.data;
-  //             if (!success) throw new Error(message);
-  //             let { data, lastPage } = tracking;
-  //             // console.log(data)
-  //             // setting tracking state
-  //             // this.setState(state => {
-  //             //     state.tracking = up ? [...state.tracking, ...data] : data;
-  //             //     return { tracking: state.tracking };
-  //             // });
-  //             // console.log(data)
-  //             await settracking([...data])
-  //             // // validar siguiente request
-  //             if (lastPage >= page + 1) getTracking(page + 1);
-  //         })
-  //         .catch(err => {
-  //             setLoading(false);
-  //             console.log(err.message)
-  //         })
-  // }
+  // estados
+  const [option, setOption] = useState(false);
 
+  // cambio de estado
   const getMetadata = (status) => {
     let icons = {
       DERIVADO: {
@@ -102,102 +80,113 @@ const TimeLine = ({ trackings, setLoading }) => {
     return icons[status] || {};
   };
 
-  const handleShowFile = (obj, index, estado) => {
-    obj.show_file = estado;
-    let newTracking = JSON.parse(JSON.stringify(trackingg));
-    newTracking[index] = obj;
-    settracking(newTracking);
-  };
+  // obtener estado
+  const current_status = getMetadata(tracking.status);
 
+  // render
+  return (
+    <Fragment>
+      <VerticalTimelineElement
+        className="vertical-timeline-element--work"
+        date={moment(tracking.updated_at).format("h:mm a")}
+        contentStyle={{
+          border: "2px solid rgb(0, 162, 138)",
+          borderRadius: "20px",
+        }}
+        contentArrowStyle={{ borderRight: "10px solid rgb(0, 162, 138)" }}
+        iconStyle={{ background: "rgb(0, 162, 138)" }}
+        icon={current_status.icon}
+      >
+        <h3 className="vertical-timeline-element-title">
+          {current_status.name || tracking.status}
+        </h3>
+        <h4 className="vertical-timeline-element-subtitle">
+          {current_status.message}
+          <span className="badge badge-dark">
+            {dependencia && `${dependencia.nombre}`.toUpperCase()}
+          </span>
+        </h4>
+        <hr></hr>
+        {info && info.description || ""}
+
+        <Show condicion={info && info.files && info.files.length || false}>
+          <p>
+            <button className="btn btn-dark btn-sm"
+              onClick={(e) => setOption(options.FILE)}
+            >
+              Ver Archivos
+            </button>
+          </p>
+        </Show>
+
+        <p>{moment(tracking.updated_at).format("LL")}</p>
+
+        <Show condicion={Object.keys(tramite || {}).length}>
+            <button className="btn btn-outline-primary mt-2"
+              onClick={(e) => typeof onClick == 'function' ? onClick(tramite) : null}
+            >
+                Información
+            </button>
+        </Show>
+      </VerticalTimelineElement>
+
+      {/* mostrar files */}
+      <Show condicion={option == options.FILE}>
+        <VerArchivo
+          header="Visualizador de archivos del Seguimiento"
+          onClose={() => setOption("")}
+        >
+          <Table celled>
+            <Table.Header>
+              <Table.Row>
+                <Table.HeaderCell>Nombre</Table.HeaderCell>
+                <Table.HeaderCell>Descargar</Table.HeaderCell>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              {info && 
+                info.files && 
+                info.files.map((f, i) => (
+                  <Table.Row key={i}>
+                    <Table.Cell>
+                      {`${f.name}`} <Icon name="file pdf outline" />
+                    </Table.Cell>
+                    <Table.Cell>
+                      <a target="_blank" href={f.url}>
+                        <SearchIcon />
+                      </a>
+                    </Table.Cell>
+                  </Table.Row>
+                )) || null}
+            </Table.Body>
+          </Table>
+        </VerArchivo>
+      </Show>
+    </Fragment>
+  )
+}
+
+const TimeLine = ({ trackings, setLoading }) => {
+
+  // estados
+  const [trackingg, settracking] = useState(trackings.data);
+  const [current_tramite, setCurrentTramite] = useState({});
+  const [option, setOption] = useState("");
+
+  // render
   return (
     <VerticalTimeline>
       {trackingg.map((track, iter) => (
-        <Fragment key={iter}>
-          <VerticalTimelineElement
-            className="vertical-timeline-element--work"
-            date={moment(track.updated_at).lang("es").format("h:mm a")}
-            contentStyle={{
-              border: "2px solid rgb(0, 162, 138)",
-              borderRadius: "20px",
-            }}
-            contentArrowStyle={{ borderRight: "10px solid rgb(0, 162, 138)" }}
-            iconStyle={{ background: "rgb(0, 162, 138)" }}
-            icon={getMetadata(track.status).icon}
-          >
-            <h3 className="vertical-timeline-element-title">
-              {getMetadata(track.status).name || track.status}
-            </h3>
-            <h4 className="vertical-timeline-element-subtitle">
-              {getMetadata(track.status).message}
-              <span className="badge badge-dark">
-                {track &&
-                  track.dependencia_destino &&
-                  `${track.dependencia_destino.nombre}`.toUpperCase()}
-              </span>
-            </h4>
-            <hr></hr>
-            {track && track.description}
-
-            <Show condicion={track.files && track.files.length}>
-              <p>
-                <button
-                  className="btn btn-dark btn-sm"
-                  onClick={(event) => handleShowFile(track, iter, true)}
-                >
-                  Ver Archivos
-                </button>
-              </p>
-            </Show>
-
-            <p>{moment(track.updated_at).lang("es").format("LL")}</p>
-
-            <Show condicion={Object.keys(track.tramite || {}).length}>
-                <button className="btn btn-outline-primary mt-2"
-                  onClick={(e) => {
-                    setCurrentTramite(track.tramite)
-                    setOption('INFO')
-                  }}
-                >
-                    Información
-                </button>
-            </Show>
-          </VerticalTimelineElement>
-
-          {/* mostrar files */}
-          <Show condicion={track.show_file == true}>
-            <VerArchivo
-              header="Visualizador de archivos del Seguimiento"
-              onClose={(event) => handleShowFile(track, iter, false)}
-            >
-              <Table celled>
-                <Table.Header>
-                  <Table.Row>
-                    <Table.HeaderCell>Nombre</Table.HeaderCell>
-                    <Table.HeaderCell>Descargar</Table.HeaderCell>
-                  </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                  {track &&
-                    track.files.map((f, i) => (
-                      <Table.Row key={i}>
-                        <Table.Cell>
-                          {`${f.name}`} <Icon name="file pdf outline" />
-                        </Table.Cell>
-                        <Table.Cell>
-                          <a target="_blank" href={f.url}>
-                            <SearchIcon />
-                          </a>
-                        </Table.Cell>
-                      </Table.Row>
-                    ))}
-                </Table.Body>
-              </Table>
-            </VerArchivo>
-          </Show>
-        </Fragment>
+        <ItemLine tracking={track}
+          key={`list-line-${iter}`}
+          onClick={(tra) => {
+            setOption(options.TRAMITE)
+            setCurrentTramite(tra);
+          }}
+        />
       ))}
       {/* mostra más información del tracking */}
-      <Show condicion={option == 'INFO'}>
+      <Show condicion={option == options.TRAMITE}>
         <VerArchivo header="Información del trámite"
           onClose={(e) => setOption('')}
         >
