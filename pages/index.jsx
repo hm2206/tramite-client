@@ -24,7 +24,7 @@ const index = (props) => {
 
   const message = async (success) => {
     if (success) {
-      await Swal.fire({ text: "Tramite encontrado", icon: "success" });
+      // await Swal.fire({ text: "Tramite encontrado", icon: "success" });
     } else {
       await Swal.fire({ text: "Tramite no encontrado", icon: "error" });
     }
