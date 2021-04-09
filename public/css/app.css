@@ -201,3 +201,8 @@ body {
 
 
 .opacity-1 { opacity: 1; }
+
+
+.capitalize {
+  text-transform: capitalize!important;
+}

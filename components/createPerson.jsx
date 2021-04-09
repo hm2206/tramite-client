@@ -303,6 +303,7 @@ export default class CreatePerson extends Component {
                                         <label className="text-muted">Apellido Paterno <b className="text-danger">*</b></label>
                                         <input type="text"
                                             name="ape_pat"
+                                            className="capitalize"
                                             value={ form.ape_pat || "" }
                                             onChange={ (e) => this.handleInput(e.target, "Apellido Paterno") }
                                             disabled={ loading || block }

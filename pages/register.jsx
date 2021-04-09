@@ -1,9 +1,10 @@
-import React, { Component, useState } from 'react';
+import React, { useState } from 'react';
 import CreateTramite from '../components/createTramite';
 import CreatePerson from '../components/createPerson';
 import { Step } from 'semantic-ui-react'
 import Show from '../components/show';
 const register = (props) => {
+
     const [pass, setpass] = useState(1);
     const [complete, setcomplete] = useState([]);
     const [person, setperson] = useState({});
@@ -13,6 +14,7 @@ const register = (props) => {
         setcomplete([...complete, pass])
         setperson(typeof person == 'object' ? person : person)
     }
+
     return (
         <div className="container mt-5">
             <div className="row justify-content-center">

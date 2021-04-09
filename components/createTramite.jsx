@@ -55,7 +55,7 @@ class CreateTramite extends Component {
                     return { file: state.file }
                 });
             } else {
-                Swal.fire({ icon: 'error', text: `El limíte máximo es de 2MB, tamaño actual(${(size_total / (1024 * 1024)).toFixed(2)} MB` })
+                Swal.fire({ icon: 'error', text: `El limíte máximo es de 5MB, tamaño actual(${(size_total / (1024 * 1024)).toFixed(2)} MB` })
             }
         }
         return false;
@@ -82,7 +82,7 @@ class CreateTramite extends Component {
                 });
             } else {
                 size_total = size_total - f.size;
-                Swal.fire({ icon: 'error', text: `El limíte máximo es de 2MB, tamaño actual(${(size_total / (1024 * 1024)).toFixed(2)}MB)` });
+                Swal.fire({ icon: 'error', text: `El limíte máximo es de 25MB, tamaño actual(${(size_total / (1024 * 1024)).toFixed(2)}MB)` });
                 return false;
             }
         }
@@ -110,7 +110,7 @@ class CreateTramite extends Component {
     getEntity = async (page = 1) => {
         await authentication.get(`entity?page=${page}`)
             .then(async res => {
-                let { lastPage, data } = res.data;
+                let { lastPage, data } = res.data.entities;
                 let newData = [];
                 await data.filter(async d => await newData.push({
                     key: `entity-${d.id}`,
@@ -264,29 +264,6 @@ class CreateTramite extends Component {
                 <Card.Content>
                     <Form >
                         <div className="form-group row">
-                            <Form.Field className="col-md-12" error={errors.entity_id && errors.entity_id[0] || ""}>
-                                <label for="c_fname">Código de Verificación <span className="text-danger">*</span></label>
-                                <div className="row">
-                                    <div className="col-md-10">
-                                        <input
-                                            placeholder="Ingrese el código de 8 cífras"
-                                            value={form.code || ""}
-                                            name="code"
-                                            onChange={(e) => this.handleInput(e.target)}
-                                        />
-                                    </div>
-
-                                    <div className="col-md-2">
-                                        <button className="btn btn-success btn-sm"
-                                            onClick={this.generateCode}
-                                        >
-                                            <i className="fas fa-sync"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <label htmlFor="">{errors.entity_id && errors.entity_id[0] || ""}</label>
-                            </Form.Field>
-
                             <Form.Field className="col-md-12" error={errors.entity_id && errors.entity_id[0] || ""}>
                                 <label for="c_fname">Entidad <span className="text-danger">*</span></label>
                                 <Form.Select

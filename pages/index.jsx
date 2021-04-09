@@ -13,7 +13,7 @@ const index = (props) => {
   const [slug, setslug] = useState(query.slug || "");
   const [lenght, setlenght] = useState(0);
   const [img, setimg] = useState("");
-  let aea = "";
+
   useEffect(() => {
     if (query.slug) {
       setting();
@@ -21,6 +21,7 @@ const index = (props) => {
     }
     setslug(query.slug || "");
   }, [query.slug]);
+
   const message = async (success) => {
     if (success) {
       await Swal.fire({ text: "Tramite encontrado", icon: "success" });
@@ -28,6 +29,7 @@ const index = (props) => {
       await Swal.fire({ text: "Tramite no encontrado", icon: "error" });
     }
   };
+  
   const setting = async () => {
     setimg(await codigo_qr(query.slug));
     setslug((props.query && props.query.slug) || slug);

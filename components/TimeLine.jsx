@@ -196,7 +196,7 @@ const TimeLine = ({ trackings, setLoading }) => {
               <input className="capitalize" 
                 type="text" 
                 readOnly 
-                value={current_tramite.dependencia_origen && current_tramite.dependencia_origen.nombre || ""}
+                value={current_tramite.dependencia_origen && current_tramite.dependencia_origen.nombre || "Exterior"}
               />
             </Form.Field>
 

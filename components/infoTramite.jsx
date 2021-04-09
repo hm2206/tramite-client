@@ -92,14 +92,14 @@ export default function InfoTramite({ tramite }) {
           </Table.Header>
 
           <Table.Body>
-            <Table.Row>
+            {/* <Table.Row>
               <Table.Cell width="5">
                 <i className="fas fa-passport "></i> Entidad
               </Table.Cell>
               <Table.Cell className="capitalize">
                 {tramite && tramite.entity && tramite.entity.name}
               </Table.Cell>
-            </Table.Row>
+            </Table.Row> */}
 
             <Table.Row>
               <Table.Cell width="5">
