@@ -366,6 +366,38 @@ export default class CreatePerson extends Component {
                                     </Form.Field>
                                 </div>
 
+                                <div className="col-md-6 mb-2">
+                                    <Form.Field error={ errors.marital_status && errors.marital_status[0] }>
+                                        <label className="text-muted">Estado Civil <b className="text-danger">*</b></label>
+                                        <select name="marital_status"
+                                            value={ form.marital_status || block }
+                                            onChange={ (e) => this.handleInput(e.target, "Estado Civil") }
+                                            disabled={ loading || block }
+                                        >
+                                            <option value="">Seleccionar Género</option>
+                                            <option value="S">Soltero</option>
+                                            <option value="C">Casado</option>
+                                            <option value="D">Divorciado</option>
+                                            <option value="D">Víudo</option>
+                                        </select>
+                                        <label>{ errors.marital_status && errors.marital_status[0] }</label>
+                                    </Form.Field>
+                                </div>
+
+                                <div className="col-md-6 mb-2">
+                                    <Form.Field error={ errors.profession && errors.profession[0] }>
+                                        <label className="text-muted">Prefijo <b className="text-danger">*</b></label>
+                                        <input type="date"
+                                            name="profession"
+                                            value={ form.profession || block }
+                                            onChange={ (e) => this.handleInput(e.target, "Prefijo") }
+                                            disabled={ loading || block }
+                                            placeholder="Ingrese su prefijo. Ejm (Sr, Dr)"
+                                        />
+                                        <label>{ errors.profession && errors.profession[0] }</label>
+                                    </Form.Field>
+                                </div>
+
                                 <div className="col-md-12 mt-4">
                                     <hr />
                                     <h4><i className="fas fa-thumbtack"></i> Ubicación</h4>
