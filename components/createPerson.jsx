@@ -73,10 +73,10 @@ export default class CreatePerson extends Component {
     }
 
     getDistritos = async (cod_dep, cod_pro) => {
-        let datos = await authentication.get(`get_distritos/${cod_dep}/${cod_pro}`)
+        let { distrito } = await authentication.get(`departamento/${cod_dep}/provincia/${cod_pro}/distrito`)
             .then(res => res.data)
-            .catch(err => []);
-        this.setState({ distritos: datos });
+            .catch(err => { distrito: {} });
+        this.setState({ distritos: distrito.data || [] });
     }
 
     handleSelect = async ({ name, value }) => {
@@ -111,10 +111,10 @@ export default class CreatePerson extends Component {
     }
 
     validation = ({ name, value, label }) => {
-        let { document_type } = this.state.form;
+        let { document_type_id } = this.state.form;
         switch (name) {
             case 'document_number':
-                if (document_type == "01") {//Dni
+                if (document_type_id == "01") {//Dni
                     this.val_min({ name, value, label }, 8)
                     this.val_max({ name, value, label }, 8)
                 }
@@ -124,8 +124,6 @@ export default class CreatePerson extends Component {
                 }
                 this.val_number({ name, value, label });
                 break;
-
-
             default:
                 break;
         }
@@ -292,7 +290,7 @@ export default class CreatePerson extends Component {
                                             name="document_number"
                                             value={ form.document_number || "" }
                                             onChange={ (e) => this.handleInput(e.target, "N° de Documento") }
-                                            disabled={ loading || block }
+                                            disabled={ loading || block || !form.document_type_id}
                                         />
                                         <label>{ errors.document_number && errors.document_number[0] }</label>
                                     </Form.Field>
