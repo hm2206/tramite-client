@@ -387,7 +387,7 @@ export default class CreatePerson extends Component {
                                 <div className="col-md-6 mb-2">
                                     <Form.Field error={ errors.profession && errors.profession[0] }>
                                         <label className="text-muted">Prefijo <b className="text-danger">*</b></label>
-                                        <input type="date"
+                                        <input type="text"
                                             name="profession"
                                             value={ form.profession || block }
                                             onChange={ (e) => this.handleInput(e.target, "Prefijo") }
