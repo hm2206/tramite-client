@@ -353,7 +353,7 @@ export default class CreatePerson extends Component {
                                     <Form.Field error={ errors.gender && errors.gender[0] }>
                                         <label className="text-muted">Género <b className="text-danger">*</b></label>
                                         <select name="gender"
-                                            value={ form.gender || block }
+                                            value={ form.gender || "" }
                                             onChange={ (e) => this.handleInput(e.target, "Genero") }
                                             disabled={ loading || block }
                                         >
@@ -389,7 +389,7 @@ export default class CreatePerson extends Component {
                                         <label className="text-muted">Prefijo <b className="text-danger">*</b></label>
                                         <input type="text"
                                             name="profession"
-                                            value={ form.profession || block }
+                                            value={ form.profession || "" }
                                             onChange={ (e) => this.handleInput(e.target, "Prefijo") }
                                             disabled={ loading || block }
                                             placeholder="Ingrese su prefijo. Ejm (Sr, Dr)"
