@@ -21,7 +21,6 @@ export const findTramite = async (ctx) => {
     }));
 };
 export const codigo_qr = async (slug) => {
-  // let { slug } = ctx.query;
   if (!slug) {
     return {
       success: false,

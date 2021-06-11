@@ -1,376 +1,254 @@
-import React, { Component } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { Button, Form, TextArea, Card, FormField } from 'semantic-ui-react';
 import { authentication, tramite } from '../services/apis';
 import Swal from 'sweetalert2';
 import Show from '../components/show';
 import Router from 'next/router';
 import DropZone from '../components/dropzone';
+import { SelectEntity, SelectDependencia } from './selects/authentication';
+import { SelectTramiteType } from './selects/tramite';
+import collect from 'collect.js';
+import { TramiteContext } from '../context/TramiteContext';
 
-class CreateTramite extends Component {
+const CreateTramite = () => {
 
-    state = {
-        entities: [],
-        dependencias: [],
-        tramite_types: [],
-        errors: {},
-        file: { size: 0, data: [] },
-        form: {
-            entity_id: "",
-            dependencia_id: "",
-            document_number: "",
-            tramite_type_id: "",
-            folio_count: "",
-            asunto: "",
-            termino: false
+    // context
+    const { person, nextTab, setPerson } = useContext(TramiteContext);
+
+    // estados
+    const [form, setForm] = useState({});
+    const [errors, setErrors] = useState({});
+    const [file, setFile] = useState({ size: 0, data: [] });
+    const [current_loading, setCurrentLoading] = useState(false);
+
+    // memos
+    const formReady = useMemo(() => {
+        let datos = ['entity_id', 'document_number', 'dependencia_id', 'tramite_type_id', 'asunto', 'folio_count', 'termino'];
+        for (let attr of datos) {
+            let isValue = form[attr];
+            if (!isValue) return false;
         }
+        let count_files = file.data.length;
+        if (!count_files) return false;
+        // response
+        return true;
+    }, [form]);
+
+    const handleInput = async ({ name, value }) => {
+        let newForm = Object.assign({}, form);
+        newForm[name] = value;
+        setForm(newForm);
+        let newErrors = Object.assign({}, errors);
+        newErrors[name] = [];
+        setErrors(newErrors);
     }
 
-    componentDidMount = async () => {
-        this.props.setLoading(true);
-        await this.getEntity();
-        await this.getTypeDocument();
-        this.props.setLoading(false);
-    }
-
-    handleInput = async ({ name, value }) => {
-        await this.setState(state => {
-            state.form[name] = value;
-            state.errors[name] = [];
-            return { form: state.form, errors: state.errors }
-        });
-        // handle change
-        this.listenerChange({ name, value });
-    }
-
-    handleFiles = ({ files }) => {
-        let { file } = this.state;
+    const handleFiles = ({ files }) => {
         let size_total = file.size;
-        let size_limit = 2 * 1024;
+        let size_limit = 25 * 1024;
+        let newFile = Object.assign({}, file);
+        let collectFile = collect([...newFile.data]);
         for (let f of files) {
+            let isExists = collectFile.where('name', f.name).count();
+            if (isExists) continue;
             size_total += f.size;
+            newFile.size += size_total;
             if ((size_total / 1024) <= size_limit) {
-                this.setState(state => {
-                    state.file.size += size_total;
-                    state.file.data.push(f);
-                    return { file: state.file }
-                });
-            } else {
-                Swal.fire({ icon: 'error', text: `El limíte máximo es de 5MB, tamaño actual(${(size_total / (1024 * 1024)).toFixed(2)} MB` })
-            }
-        }
-        return false;
-    }
-
-    setErrors = ({ name, message }) => {
-        this.setState(state => {
-            state.errors[name] = [message];
-            return { errors: state.errors }
-        });
-    }
-
-    handleFiles = ({ files }) => {
-        let { file } = this.state;
-        let size_total = file.size;
-        let size_limit = 2 * 1024;
-        for (let f of files) {
-            size_total += f.size;
-            if ((size_total / 1024) <= size_limit) {
-                this.setState(state => {
-                    state.file.size = size_total;
-                    state.file.data.push(f);
-                    return { file: state.file }
-                });
+                newFile.data.push(f);
+                setFile(newFile);
+                collectFile.push(f);
             } else {
                 size_total = size_total - f.size;
-                Swal.fire({ icon: 'error', text: `El limíte máximo es de 25MB, tamaño actual(${(size_total / (1024 * 1024)).toFixed(2)}MB)` });
+                Swal.fire({ icon: 'error', text: `El limíte máximo es de 25MB, tamaño actual(${(size_total / (1024 * 1024)).toFixed(2)} MB` });
                 return false;
             }
         }
-    }
-
-    fileExists = (name, nameFile) => {
-        let { data } = this.state.form[name];
-        for (let file of data) {
-            if (file.name == nameFile) return true;
-        }
-        // response
         return false;
     }
 
-    listenerChange = async ({ name, value }) => {
-        switch (name) {
-            case 'entity_id':
-                await this.getDependencia(value);
-                break;
-            default:
-                break;
+    const deleteFile = (index, tmpFile) => {
+        let newFile = Object.assign({}, file);
+        newFile.data.splice(index, 1);
+        newFile.size = newFile.size - tmpFile.size;
+        setFile(newFile);
+    }
+
+    const handleSave = async () => {
+        let payload = new FormData();
+        // data person
+        payload.append('person_id', person.id);
+        // datos
+        for (let attr in form) {
+            if (attr != 'files') payload.append(attr, form[attr])
         }
-    }
-
-    getEntity = async (page = 1) => {
-        await authentication.get(`entity?page=${page}`)
-            .then(async res => {
-                let { lastPage, data } = res.data.entities;
-                let newData = [];
-                await data.filter(async d => await newData.push({
-                    key: `entity-${d.id}`,
-                    value: d.id,
-                    text: `${d.name}`.toUpperCase()
-                }));
-                // setting state
-                await this.setState(state => ({
-                    entities: [...state.entities, ...newData]
-                }));
-                // validar para volver a traer más datos
-                if (lastPage > page + 1) await this.getEntity(page + 1);
-            })
-            .catch(err => console.log(err.message));
-
-    }
-
-    getDependencia = async (entity_id, page = 1) => {
-        if (entity_id) {
-            this.props.setLoading(true);
-            await tramite.get(`public/dependencia/${entity_id}?page=${page}`)
-                .then(async res => {
-                    let { success, message, dependencia } = res.data;
-                    if (!success) throw new Error(message);
-                    // setting dependencias
-                    let { lastPage, data } = dependencia;
-                    let newData = [];
-                    await data.filter(async d => await newData.push({
-                        key: `dependencia-${d.id}`,
-                        value: d.id,
-                        text: `${d.nombre}`.toUpperCase()
-                    }));
-
-                    // setting state
-                    await this.setState(state => ({
-                        dependencias: [...state.dependencias, ...newData]
-                    }));
-                    // validar para volver a traer más datos
-                    if (lastPage > page + 1) await this.getDependencia(page + 1);
-                })
-                .catch(err => console.log(err.message));
-            this.props.setLoading(false);
-        } else this.setState({ dependencias: [] });
-    }
-
-    getTypeDocument = async (page = 1) => {
-        await tramite.get(`tramite_type?page=${page}`)
-            .then(async res => {
-                let { success, message, tramite_type } = res.data;
-                if (!success) throw new Error(message);
-                // setting dependencias
-                let { lastPage, data } = tramite_type;
-                let newData = [];
-                await data.filter(async d => await newData.push({
-                    key: `tramite_type-${d.id}`,
-                    value: d.id,
-                    text: `${d.description}`.toUpperCase()
-                }));
-                // setting state
-
-                await this.setState(state => ({
-                    tramite_types: [...state.tramite_types, ...newData]
-                }));
-                // validar para volver a traer más datos
-                if (lastPage > page + 1) await this.getTypeDocument(page + 1);
-            })
-            .catch(err => console.log(err.message));
-    }
-
-    generateCode = async () => {
-        let { person } = this.props;
-        this.handleInput({ name: 'code', value: "" });
-        this.props.setLoading(true);
-        await tramite.post('code_verify', {
-            person_id: person.id || "_error"
-        }).then(async res => {
-            // console.log(res.data)
-            this.props.setLoading(false);
+        // add files
+        file.data.filter(f => payload.append('files', f));
+        setCurrentLoading(true);
+        // send data
+        await tramite.post('public/tramite', payload)
+        .then(async res => {
             let { success, message } = res.data;
             if (!success) throw new Error(message);
             await Swal.fire({ icon: 'success', text: message });
+            setForm({});
+            let { push } = Router;
+            push({ pathname: '/', query: { slug: tramite.slug } })
         }).catch(async err => {
-            this.props.setLoading(false);
-            await Swal.fire({ icon: 'error', text: 'No se pudo generar el código' })
-        });
-    }
-
-    deleteFile = (index, file) => {
-        this.setState(state => {
-            state.file.data.splice(index, 1);
-            state.file.size = state.file.size - file.size;
-            return { file: state.file };
-        });
-    }
-
-    saveTramite = async () => {
-        this.props.setLoading(true);
-        let { person } = this.props;
-        let { form, file } = this.state;
-        let data = new FormData;
-        // data person
-        data.append('person_id', person.id);
-        // datos
-        for (let attr in form) {
-            if (attr != 'files') data.append(attr, form[attr])
-        }
-        // add files
-        file.data.filter(f => data.append('files', f));
-        // send data
-        await tramite.post('public/tramite', data)
-            .then(async res => {
-                this.props.setLoading(false);
-                let { success, message, tramite } = res.data;
-                if (!success) throw new Error(message);
-                await Swal.fire({ icon: 'success', text: message });
-                let { push } = Router;
-                push({ pathname: '/', query: { slug: tramite.slug } })
-            })
-            .catch(async err => {
-                try {
-                    this.props.setLoading(false);
-                    let response = JSON.parse(err.message);
-                    Swal.fire({ icon: 'warning', text: response.message });
-                    this.setState({ errors: response.errors });
-                } catch (error) {
-                    Swal.fire({ icon: 'error', text: err.message });
+            try {
+                let response = err.response;
+                let message = "";
+                let errors = {};
+                if (typeof response != 'object') message = err.message;
+                else {
+                    message = response?.data?.message || err.message;
+                    errors = response?.data?.errors || {};
                 }
-            });
+                // alerta
+                Swal.fire({ icon: 'warning', text: message });
+                setErrors(errors);
+            } catch (error) {
+                Swal.fire({ icon: 'error', text: "ocurrio un error al crear el trámite" });
+            }
+        });
+        setCurrentLoading(false);
     }
 
-    formValidation = () => {
-        let { form } = this.state;
-        for (let attr in form) {
-            if (!form[attr]) return false;
-        }
-        // reponse default
-        return true;
+    const handleCancel = () => {
+        setPerson({});
+        nextTab('validate', 'validate');
     }
 
-    render() {
+    return (
+        <Card fluid>
+            <Card.Header>
+                <div className="card-body">
+                    <h4 className="">Regístro de Tramite</h4>
+                </div>
+            </Card.Header>
+            <Card.Content>
+                <Form >
+                    <div className="form-group row">
+                        <Form.Field className="col-md-12" error={errors?.entity_id?.[0] ? true : false}>
+                            <label className="text-muted">Entidad <span className="text-danger">*</span></label>
+                            <SelectEntity
+                                value={form.entity_id}
+                                name="entity_id"
+                                onChange={(e, obj) => handleInput(obj)}
+                                disabled={current_loading}
+                            />
+                            <label htmlFor="">{errors?.entity_id?.[0] || ""}</label>
+                        </Form.Field>
 
-        let { form, dependencias, tramite_types, errors, file } = this.state;
+                        <Form.Field className="col-md-12" error={errors?.dependencia_id?.[0] ? true : false}>
+                            <label className="text-muted">Destino del Documento <span className="text-danger">*</span></label>
+                            <SelectDependencia
+                                name="dependencia_id"
+                                options={[]}
+                                value={form.dependencia_id || ""}
+                                onChange={(e, obj) => handleInput(obj)}
+                                disabled={current_loading}
+                            />
+                            <label htmlFor="">{errors?.dependencia_id?.[0] || ""}</label>
+                        </Form.Field>
 
-        return (
-            <Card fluid>
-                <Card.Header>
-                    <div className="card-body">
-                        <h3 className="">Regístro de Tramite</h3>
+                        <Form.Field className="col-md-12" error={errors?.tramite_type_id?.[0] ? true : false} >
+                            <label className="text-muted">Tipo del Documento <span className="text-danger">*</span></label>
+                            <SelectTramiteType
+                                name="tramite_type_id"
+                                value={form.tramite_type_id || ""}
+                                onChange={(e, obj) => handleInput(obj)}
+                                disabled={current_loading}
+                            />
+                            <label htmlFor="">{errors?.tramite_type_id?.[0] || ""}</label>
+                        </Form.Field>
+
+                        <Form.Field className="col-md-6" error={errors?.document_number?.[0] ? true : false}>
+                            <label className="text-muted">N° Documento <span className="text-danger">*</span></label>
+                            <input
+                                type="text"
+                                name="document_number"
+                                value={form.document_number || ""}
+                                disabled={current_loading}
+                                onChange={(e) => handleInput(e.target)}
+                            />
+                            <label>{errors?.document_number?.[0] || ""}</label>
+                        </Form.Field>
+
+                        <Form.Field className="col-md-6" error={errors?.folio_count?.[0] ? true : false}>
+                            <label className="text-muted">N° Folios <span className="text-danger">*</span></label>
+                            <input
+                                type="text"
+                                name="folio_count"
+                                value={form.folio_count || ""}
+                                onChange={(e) => handleInput(e.target)}
+                                disabled={current_loading}
+                            />
+                            <label>{errors?.folio_count?.[0] || ""}</label>
+                        </Form.Field>
+
+                        <Form.Field className="col-md-12" error={errors?.asunto?.[0] ? true : false}>
+                            <label className="text-muted">Asunto del Tramite <span className="text-danger">*</span></label>
+                            <TextArea
+                                type="text"
+                                name="asunto"
+                                value={form.asunto || ""}
+                                onChange={(e) => handleInput(e.target)}
+                                disabled={current_loading}
+                            />
+                            <label>{errors?.asunto?.[0] || ""}</label>
+                        </Form.Field>
+
+                        <Form.Field className="col-md-12">
+                            <label htmlFor="">Archivos (25mb máx)</label>
+                            <DropZone id="files"
+                                name="files"
+                                onChange={handleFiles}
+                                icon="save"
+                                result={file.data}
+                                title="Select. Archivo (*.docx, *.pdf)"
+                                accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword"
+                                onDelete={(e) => deleteFile(e.index, e.file)}
+                                disabled={current_loading}
+                            />
+                        </Form.Field>
+
+                        <Form.Field className="col-md-12">
+                            <Form.Checkbox label='Declaro bajo penalidad de perjurio, que toda la informacion proporcionada es correcta y verídica' 
+                                toggle
+                                checked={form.termino || false}
+                                name="termino"
+                                disabled={current_loading}
+                                onChange={(e, obj) => handleInput({ name: obj.name, value: obj.checked })}
+                            />
+                        </Form.Field>
                     </div>
-                </Card.Header>
-                <Card.Content>
-                    <Form >
-                        <div className="form-group row">
-                            <Form.Field className="col-md-12" error={errors.entity_id && errors.entity_id[0] || ""}>
-                                <label for="c_fname">Entidad <span className="text-danger">*</span></label>
-                                <Form.Select
-                                    placeholder="Seleccione la Entidad"
-                                    options={this.state.entities}
-                                    value={form.entity_id || ""}
-                                    name="entity_id"
-                                    onChange={(e, obj) => this.handleInput(obj)}
-                                />
-                                <label htmlFor="">{errors.entity_id && errors.entity_id[0] || ""}</label>
-                            </Form.Field>
-                            <Form.Field className="col-md-6" error={errors.dependencia_id && errors.dependencia_id[0] || ""}>
-                                <label for="c_fname">Destino del Documento <span className="text-danger">*</span></label>
-                                <Form.Select
-                                    placeholder="Seleccione la Procedencia"
-                                    name="dependencia_id"
-                                    options={dependencias}
-                                    value={form.dependencia_id || ""}
-                                    onChange={(e, obj) => this.handleInput(obj)}
-                                />
-                                <label htmlFor="">{errors.dependencia_id && errors.dependencia_id[0] || ""}</label>
-                            </Form.Field>
-                            <Form.Field className="col-md-6" error={errors.tramite_type_id && errors.tramite_type_id[0] || ""} >
-                                <label for="c_fname">Tipo del Documento <span className="text-danger">*</span></label>
-                                <Form.Select
-                                    placeholder="Seleccione el Tipo de Documento"
-                                    options={tramite_types}
-                                    name="tramite_type_id"
-                                    value={form.tramite_type_id || ""}
-                                    onChange={(e, obj) => this.handleInput(obj)}
-                                />
-                                <label htmlFor="">{errors.tramite_type_id && errors.tramite_type_id[0] || ""}</label>
-                            </Form.Field>
-                            <Form.Field className="col-md-6" error={errors.document_number && errors.document_number[0] || ""} >
-                                <label for="c_fname">N° Documento <span className="text-danger">*</span></label>
-                                <input
-                                    type="text"
-                                    name="document_number"
-                                    value={form.document_number || ""}
-                                    onChange={(e) => this.handleInput(e.target)}
-                                />
-                                <label>{errors.document_number && errors.document_number[0] || ""}</label>
-                            </Form.Field>
-                            <Form.Field className="col-md-6" error={errors.folio_count && errors.folio_count[0] || ""}>
-                                <label for="c_fname">N° Folios <span className="text-danger">*</span></label>
-                                <input
-                                    type="text"
-                                    name="folio_count"
-                                    value={form.folio_count || ""}
-                                    onChange={(e) => this.handleInput(e.target)}
-                                />
-                                <label>{errors.folio_count && errors.folio_count[0] || ""}</label>
-                            </Form.Field>
-                            <Form.Field className="col-md-12" error={errors.asunto && errors.asunto[0] || ""}>
-                                <label for="c_fname">Asunto del Tramite <span className="text-danger">*</span></label>
-                                <TextArea
-                                    type="text"
-                                    name="asunto"
-                                    value={form.asunto || ""}
-                                    onChange={(e) => this.handleInput(e.target)}
-                                />
-                                <label>{errors.asunto && errors.asunto[0] || ""}</label>
-                            </Form.Field>
 
-                            <Form.Field className="col-md-12">
-                                <DropZone id="files"
-                                    name="files"
-                                    onChange={(e) => this.handleFiles(e)}
-                                    icon="save"
-                                    result={file.data}
-                                    title="Select. Archivo (*.docx, *.pdf)"
-                                    accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                                    onDelete={(e) => this.deleteFile(e.index, e.file)}
-                                />
-                            </Form.Field>
+                    <div className="form-group row">
+                        <div className="col-lg-12 text-right">
+                            <hr />
 
-                            <Form.Field className="col-md-12">
-                                <Form.Checkbox label='Declaro bajo penalidad de perjurio, que toda la informacion proporcionada es correcta y verídica' toggle
-                                    checked={form.termino || false}
-                                    name="termino"
-                                    onChange={(e, obj) => this.handleInput({ name: obj.name, value: obj.checked })}
-                                />
-                            </Form.Field>
+                            <Button color="red"
+                                basic
+                                onClick={handleCancel}
+                                disabled={current_loading}
+                            >
+                                Cancelar
+                            </Button>
 
+                            <Button color="teal"
+                                onClick={handleSave}
+                                disabled={!formReady || current_loading}
+                                loading={current_loading}
+                            >
+                                Registrar
+                            </Button>
                         </div>
-
-                        <div className="form-group row">
-                            <div className="col-lg-12 text-right">
-
-                                <hr />
-
-                                <Button color="teal"
-                                    onClick={this.saveTramite}
-                                    disabled={!this.formValidation()}
-                                >
-                                    Registrar
-                                </Button>
-                            </div>
-                        </div>
-                    </Form>
-                </Card.Content >
-            </Card >
-
-        )
-    }
+                    </div>
+                </Form>
+            </Card.Content >
+        </Card >
+    )
 }
-
 
 
 

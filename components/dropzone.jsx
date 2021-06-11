@@ -39,7 +39,7 @@ const DropZone = ({ id, name, onChange, error = false, children = null, title = 
         <label>{ error || "" }</label>
         <div className="row">
             { result.map((f, indexF) =>
-                <div className="col-md-3" key={ `${id}-files-${f.name}` }>
+                <div className="col-md-4" key={ `${id}-files-${f.name}` }>
                     <div className="card">
                         <div className="card-body" style={ { overflow: 'hidden' } }>
                             <div className="dropzone-text">

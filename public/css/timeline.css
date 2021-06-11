@@ -170,3 +170,30 @@
     margin-right: 10px;
     position: relative;
 }
+
+.switch-circle {
+  background: transparent!important;
+  border-radius: 50%!important;
+  width: 100px;
+  height: 100px;
+  box-shadow: 0 1px 2px 0 rgb(34 36 38 / 15%)!important;
+  border: 1px solid rgba(34,36,38,.15)!important;
+}
+
+.switch-circle:hover {
+  border-color: #00a28a!important;
+  border-width: 2px!important;
+}
+
+
+.switch-circle:hover > * {
+  color: #00a28a!important;
+}
+
+.switch-circle.active {
+  background: #00a28a!important;
+}
+
+.switch-circle.active > * {
+  color: #fff!important;
+}
