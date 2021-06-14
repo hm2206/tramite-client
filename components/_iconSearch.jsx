@@ -13,4 +13,5 @@ const IconSearch = ({ onClick = null, disabled = false }) => {
     );
 }
 
+
 export default IconSearch;
