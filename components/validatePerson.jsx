@@ -5,7 +5,7 @@ import { authentication } from '../services/apis';
 import Show from './show';
 import FormPerson from './formPerson';
 import CreatePerson from './createPerson';
-import IconSearch from './IconSearch';
+import IconSearch from './iconSearch';
 
 
 const ValidatePerson = () => {
