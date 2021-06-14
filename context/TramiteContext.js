@@ -52,7 +52,7 @@ export const TramiteProvider = ({ children }) => {
 
     // render
     return (
-        <TramiteContext.Provider value={{ tab, nextTab, person, setPerson, tramite, setTramite, complete, setComplete, Component }}>
+        <TramiteContext.Provider value={{ tab, setTab, nextTab, person, setPerson, tramite, setTramite, complete, setComplete, Component }}>
             {children || null}
         </TramiteContext.Provider>
 

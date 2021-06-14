@@ -59,3 +59,19 @@ export const tramite = {
     path: url.API_TRAMITE
 };
 
+
+/**
+ * api para consumir el sistema de académico
+ */
+ export const academico = {
+    get: async (path, config = {}, ctx) => {
+        return axios.get(`${url.API_ACADEMICO}/${path}`, await ConfigHeaders(ctx, config));
+    },
+    post: async (path, body = {}, config = {}, ctx) => {
+        return axios.post(`${url.API_ACADEMICO}/${path}`, body, await ConfigHeaders(ctx, config));
+    },
+    fetch: async (path, config = {}, ctx) => {
+        return fetch(`${url.API_ACADEMICO}/${path}`, await ConfigHeaders(ctx, config));
+    },
+    path: url.API_TRAMITE
+};

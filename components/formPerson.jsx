@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Form, Select } from 'semantic-ui-react';
-import { authentication } from '../services/apis';
 import { SelectDepartamento, SelectProvincia, SelectDistrito, SelectDocumentType } from '../components/selects/authentication';
 
-const FormPerson = ({ form = {}, errors = {}, disabled = false, onChange = null, children = null }) => {
+const FormPerson = ({ form = {}, errors = {}, disabled = false, readOnly = [], onChange = null, children = null }) => {
 
     const handleInput = (e, { name, value }) => {
         if (typeof onChange == 'function') onChange(e, { name, value });
@@ -19,7 +18,7 @@ const FormPerson = ({ form = {}, errors = {}, disabled = false, onChange = null,
                             value={form.document_type_id}
                             id="code"
                             onChange={(e, obj) => handleInput(e, obj)}
-                            disabled={disabled}
+                            disabled={disabled || readOnly.includes('document_type_id')}
                         />
                         <label>{errors?.document_type?.[0]}</label>
                     </Form.Field>
@@ -29,7 +28,7 @@ const FormPerson = ({ form = {}, errors = {}, disabled = false, onChange = null,
                     <Form.Field error={errors?.document_number?.[0] ? true : false}>
                         <label className="text-muted">N° Documento <b className="text-danger">*</b></label>
                         <input name="document_number" 
-                            readOnly={disabled}
+                            readOnly={disabled || readOnly.includes('document_number')}
                             placeholder="Ingrese el N° Documento"
                             value={form.document_number || ""}
                             onChange={(e) => handleInput(e, e.target)}
@@ -42,7 +41,7 @@ const FormPerson = ({ form = {}, errors = {}, disabled = false, onChange = null,
                     <Form.Field error={errors?.ape_pat?.[0] ? true : false}>
                         <label className="text-muted">Apellido Paterno <b className="text-danger">*</b></label>
                         <input name="ape_pat" 
-                            readOnly={disabled}
+                            readOnly={disabled || readOnly.includes('ape_pat')}
                             placeholder="Ingrese su apellido paterno"
                             value={form.ape_pat || ""}
                             onChange={(e) => handleInput(e, e.target)}
@@ -56,7 +55,7 @@ const FormPerson = ({ form = {}, errors = {}, disabled = false, onChange = null,
                     <Form.Field error={errors?.ape_mat?.[0] ? true : false}>
                         <label className="text-muted">Apellido Materno <b className="text-danger">*</b></label>
                         <input name="ape_mat" 
-                            readOnly={disabled}
+                            readOnly={disabled || readOnly.includes('ape_mat')}
                             placeholder="Ingrese su apellido materno"
                             value={form.ape_mat || ""}
                             onChange={(e) => handleInput(e, e.target)}
@@ -70,7 +69,7 @@ const FormPerson = ({ form = {}, errors = {}, disabled = false, onChange = null,
                     <Form.Field error={errors?.name?.[0] ? true : false}>
                         <label className="text-muted">Nombres <b className="text-danger">*</b></label>
                         <input name="name" 
-                            readOnly={disabled}
+                            readOnly={disabled || readOnly.includes('name')}
                             placeholder="Ingrese su nombre"
                             value={form.name || ""}
                             onChange={(e) => handleInput(e, e.target)}
@@ -86,7 +85,7 @@ const FormPerson = ({ form = {}, errors = {}, disabled = false, onChange = null,
                         <input name="profession" 
                             placeholder="Ingrese el prefijo. Ejm: Sr, Sra, Dr"
                             type="text"
-                            readOnly={disabled}
+                            readOnly={disabled || readOnly.includes('profession')}
                             value={form.profession || ""}
                             onChange={(e) => handleInput(e, e.target)}
                         />
@@ -98,7 +97,8 @@ const FormPerson = ({ form = {}, errors = {}, disabled = false, onChange = null,
                     <Form.Field error={errors?.gender?.[0] ? true : false}>
                         <label className="text-muted">Género <b className="text-danger">*</b></label>
                         <Select name="gender" 
-                            disabled={disabled}
+                            disabled={disabled || readOnly.includes('gender')}
+                            placeholder="Selecionar Género"
                             value={form.gender || ""}
                             onChange={(e, obj) => handleInput(e, obj)}
                             options={[
@@ -114,8 +114,9 @@ const FormPerson = ({ form = {}, errors = {}, disabled = false, onChange = null,
                     <Form.Field error={errors?.marital_status?.[0] ? true : false}>
                         <label className="text-muted">Estado Civil <b className="text-danger">*</b></label>
                         <Select name="marital_status" 
-                            disabled={disabled}
+                            disabled={disabled || readOnly.includes('marital_status')}
                             value={form.marital_status || ""}
+                            placeholder="Seleccionar Estado Civil"
                             onChange={(e, obj) => handleInput(e, obj)}
                             options={[
                                 { key: 'S', value: 'S', text: 'Soltero' },
@@ -133,7 +134,7 @@ const FormPerson = ({ form = {}, errors = {}, disabled = false, onChange = null,
                         <label className="text-muted">Fecha de Nacimiento <b className="text-danger">*</b></label>
                         <input name="date_of_birth" 
                             type="date"
-                            readOnly={disabled}
+                            readOnly={disabled || readOnly.includes('date_of_birth')}
                             value={form.date_of_birth || ""}
                             onChange={(e) => handleInput(e, e.target)}
                         />
@@ -181,7 +182,7 @@ const FormPerson = ({ form = {}, errors = {}, disabled = false, onChange = null,
                             id="cod_dis"
                             disabled={disabled && form.cod_dis}
                             value={form.cod_dis}
-                            refresh={form.cod_dep}
+                            refresh={form.cod_pro}
                             onChange={(e, obj) => handleInput(e, obj)}
                         />
                         <label>{errors?.cod_dis?.[0]}</label>
@@ -198,7 +199,7 @@ const FormPerson = ({ form = {}, errors = {}, disabled = false, onChange = null,
                     <Form.Field error={errors?.email_contact?.[0] ? true : false}>
                         <label className="text-muted">Correro Electrónico <b className="text-danger">*</b></label>
                         <input name="email_contact" 
-                            readOnly={disabled}
+                            readOnly={disabled || readOnly.includes('email_contact')}
                             placeholder="Ingrese su correo electrónico"
                             value={form.email_contact || ""}
                             onChange={(e) => handleInput(e, e.target)}
@@ -211,7 +212,7 @@ const FormPerson = ({ form = {}, errors = {}, disabled = false, onChange = null,
                     <Form.Field error={errors?.phone?.[0] ? true : false}>
                         <label className="text-muted">N° de contacto <b className="text-danger">*</b></label>
                         <input name="phone" 
-                            readOnly={disabled}
+                            readOnly={disabled || readOnly.includes('phone')}
                             placeholder="Ingrese su N° de contacto"
                             value={form.phone || ""}
                             onChange={(e) => handleInput(e, e.target)}
@@ -225,7 +226,7 @@ const FormPerson = ({ form = {}, errors = {}, disabled = false, onChange = null,
                         <label className="text-muted">Dirección <b className="text-danger">*</b></label>
                         <textarea name="address"
                             rows="3" 
-                            readOnly={disabled}
+                            readOnly={disabled || readOnly.includes('address')}
                             placeholder="Ingrese su dirección"
                             value={form.address || ""}
                             onChange={(e) => handleInput(e, e.target)}

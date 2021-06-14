@@ -41,8 +41,29 @@ const SelectConfigDependenciaDestino = ({ id = "id", name, dependencia_id, value
     />
 }
 
+const SelectDependenciaExterna = ({ id = "id", name, entity_id, value, onChange, error = false, onReady = null, disabled = false }) => {
+    return <SelectBase 
+        execute={false}
+        api={tramite}
+        url={`public/dependencia/${entity_id}`}
+        id={`select-public-dependencia-externa-${name}`}
+        value={id}
+        text="nombre"
+        obj="dependencia"
+        name={name}
+        valueChange={`${value || ""}`}
+        onChange={(e, obj) => typeof onChange == 'function' ? onChange(e, obj) : null}
+        placeholder="Seleccionar Dependencia"
+        refresh={entity_id}
+        error={error}
+        onReady={onReady}
+        disabled={disabled}
+    />
+}
+
 
 export { 
     SelectTramiteType,
-    SelectConfigDependenciaDestino
+    SelectConfigDependenciaDestino,
+    SelectDependenciaExterna
 };

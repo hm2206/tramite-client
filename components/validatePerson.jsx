@@ -3,19 +3,10 @@ import { Card, Loader, Button, Input, Icon } from 'semantic-ui-react';
 import { TramiteContext } from '../context/TramiteContext';
 import { authentication } from '../services/apis';
 import Show from './show';
-import FormPerson from '../components/formPerson';
+import FormPerson from './formPerson';
+import CreatePerson from './createPerson';
+import IconSearch from './IconSearch';
 
-const ItemIcon = ({ disabled = false, onClick = null }) => {
-    return (
-        <Icon name='search' 
-            inverted 
-            circular 
-            link 
-            onClick={onClick}
-            disabled={disabled}
-        />
-    )
-}
 
 const ValidatePerson = () => {
 
@@ -67,7 +58,7 @@ const ValidatePerson = () => {
     return (
         <Card fluid>
             <Card.Header className="card-body">
-                <h4><i className="fas fa-user-friends"></i> Validar Persona</h4>
+                <h5><i className="fas fa-user-friends"></i> Validar Persona</h5>
             </Card.Header>
             <Card.Content>
                 <div className="row">
@@ -109,7 +100,7 @@ const ValidatePerson = () => {
                                             fluid
                                             disabled={current_loading || block}
                                             icon={
-                                                <ItemIcon 
+                                                <IconSearch 
                                                     disabled={query_search <= 3 || current_loading || block} 
                                                     onClick={findPerson}
                                                 />
@@ -162,6 +153,17 @@ const ValidatePerson = () => {
                             </div>
                         </div>
                     </Show>
+                    {/* regístrar */}
+                    <Show condicion={option == options.register}>
+                        <div className="col-12 mb-3">
+                            <Button onClick={handleBack} disabled={block}>
+                                <i className="fas fa-arrow-left"></i>
+                            </Button>
+                        </div>
+                        <div className="col-12">
+                            <CreatePerson/>
+                        </div>
+                    </Show> 
                 </div>
             </Card.Content>
         </Card>
@@ -169,26 +171,3 @@ const ValidatePerson = () => {
 }
 
 export default ValidatePerson;
-
-
-{/* <Card fluid>
-<Card.Header className="card-body">
-    <h3><i className="fas fa-user-friends"></i> Validar Persona</h3>
-</Card.Header>
-<Card.Content>
-    <div className="row">
-        <div className="col-6 text-center mb-3">
-            <Button className="switch-circle" style={square}>
-                <h1 className="text-dark"><i className="fas fa-user"></i></h1>
-                <div className="text-muted">Soy Externo</div>
-            </Button>
-        </div>
-        <div className="col-6 text-center mb-3">
-            <Button className="switch-circle" style={square}>
-                <h1 className="text-dark"><i className="fas fa-user-graduate"></i></h1>
-                <div className="text-muted">Soy Estudiante</div>
-            </Button>
-        </div>
-    </div>
-</Card.Content>
-</Card> */}

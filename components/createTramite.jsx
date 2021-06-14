@@ -6,7 +6,7 @@ import Show from '../components/show';
 import Router from 'next/router';
 import DropZone from '../components/dropzone';
 import { SelectEntity, SelectDependencia } from './selects/authentication';
-import { SelectTramiteType } from './selects/tramite';
+import { SelectTramiteType, SelectDependenciaExterna } from './selects/tramite';
 import collect from 'collect.js';
 import { TramiteContext } from '../context/TramiteContext';
 
@@ -88,11 +88,12 @@ const CreateTramite = () => {
         await tramite.post('public/tramite', payload)
         .then(async res => {
             let { success, message } = res.data;
+            let current_tramite = res.data.tramite;
             if (!success) throw new Error(message);
             await Swal.fire({ icon: 'success', text: message });
             setForm({});
             let { push } = Router;
-            push({ pathname: '/', query: { slug: tramite.slug } })
+            push({ pathname: '/', query: { slug: current_tramite.slug } })
         }).catch(async err => {
             try {
                 let response = err.response;
@@ -141,12 +142,13 @@ const CreateTramite = () => {
 
                         <Form.Field className="col-md-12" error={errors?.dependencia_id?.[0] ? true : false}>
                             <label className="text-muted">Destino del Documento <span className="text-danger">*</span></label>
-                            <SelectDependencia
+                            <SelectDependenciaExterna
+                                entity_id={form.entity_id}
                                 name="dependencia_id"
                                 options={[]}
                                 value={form.dependencia_id || ""}
                                 onChange={(e, obj) => handleInput(obj)}
-                                disabled={current_loading}
+                                disabled={!form.entity_id || current_loading}
                             />
                             <label htmlFor="">{errors?.dependencia_id?.[0] || ""}</label>
                         </Form.Field>
