@@ -1,11 +1,11 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Button, Form, TextArea, Card, FormField } from 'semantic-ui-react';
 import { authentication, tramite } from '../services/apis';
 import Swal from 'sweetalert2';
 import Show from '../components/show';
 import Router from 'next/router';
 import DropZone from '../components/dropzone';
-import { SelectEntity, SelectDependencia } from './selects/authentication';
+import { SelectEntity } from './selects/authentication';
 import { SelectTramiteType, SelectDependenciaExterna } from './selects/tramite';
 import collect from 'collect.js';
 import { TramiteContext } from '../context/TramiteContext';
@@ -14,8 +14,10 @@ const CreateTramite = () => {
 
     // context
     const { person, nextTab, setPerson } = useContext(TramiteContext);
-
+    
     // estados
+    const [block, setBlock] = useState(false);
+    const [code, setCode] = useState(null);
     const [form, setForm] = useState({});
     const [errors, setErrors] = useState({});
     const [file, setFile] = useState({ size: 0, data: [] });
@@ -33,6 +35,17 @@ const CreateTramite = () => {
         // response
         return true;
     }, [form]);
+
+    const getEstudiante = async () => {
+        setBlock(true);
+        await authentication.get(`apis/siga/get_resolver?url=alumnos/dni/${person?.document_number || ''}`)
+        .then(res => {
+            let [{curricula}] = res.data.data;
+            if (!curricula) throw new Error("No se encontró al estudiante");
+            setCode(curricula?.escuela_id || null);
+        }).catch(err => setCode(null));
+        setBlock(false);
+    }
 
     const handleInput = async ({ name, value }) => {
         let newForm = Object.assign({}, form);
@@ -83,6 +96,8 @@ const CreateTramite = () => {
         }
         // add files
         file.data.filter(f => payload.append('files', f));
+        // add code
+        payload.append('code', code);
         setCurrentLoading(true);
         // send data
         await tramite.post('public/tramite', payload)
@@ -119,6 +134,10 @@ const CreateTramite = () => {
         nextTab('validate', 'validate');
     }
 
+    useEffect(() => {
+        if (person.id) getEstudiante();
+    }, [person.id]);
+
     return (
         <Card fluid>
             <Card.Header>
@@ -144,6 +163,7 @@ const CreateTramite = () => {
                             <label className="text-muted">Destino del Documento <span className="text-danger">*</span></label>
                             <SelectDependenciaExterna
                                 entity_id={form.entity_id}
+                                code={code}
                                 name="dependencia_id"
                                 options={[]}
                                 value={form.dependencia_id || ""}

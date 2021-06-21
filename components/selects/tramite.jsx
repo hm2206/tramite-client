@@ -41,11 +41,11 @@ const SelectConfigDependenciaDestino = ({ id = "id", name, dependencia_id, value
     />
 }
 
-const SelectDependenciaExterna = ({ id = "id", name, entity_id, value, onChange, error = false, onReady = null, disabled = false }) => {
+const SelectDependenciaExterna = ({ id = "id", name, entity_id, value, onChange, error = false, onReady = null, disabled = false, code = null }) => {
     return <SelectBase 
         execute={false}
         api={tramite}
-        url={`public/dependencia/${entity_id}`}
+        url={`public/dependencia/${entity_id}?code=${code}`}
         id={`select-public-dependencia-externa-${name}`}
         value={id}
         text="nombre"
