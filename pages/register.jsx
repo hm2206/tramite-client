@@ -1,6 +1,4 @@
-import React, { useContext, useMemo, useState } from 'react';
-import CreateTramite from '../components/createTramite';
-import CreatePerson from '../components/createPerson';
+import React, { useContext } from 'react';
 import { Step } from 'semantic-ui-react'
 import { TramiteContext, TramiteProvider } from '../context/TramiteContext';
 

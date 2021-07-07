@@ -227,7 +227,7 @@ const CreateTramite = () => {
                                 onChange={handleFiles}
                                 icon="save"
                                 result={file.data}
-                                title="Select. Archivo (*.docx, *.pdf)"
+                                title="Select. Archivo (*.docx, *.pdf, *.zip)"
                                 accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword"
                                 onDelete={(e) => deleteFile(e.index, e.file)}
                                 disabled={current_loading}
