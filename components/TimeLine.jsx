@@ -173,6 +173,7 @@ const TimeLine = ({ tramite = {}, last_updated = null }) => {
   const [datos, setDatos] = useState([]);
   const [page, setPage] = useState(1);
   const [last_page, setLastPage] = useState(0);
+  const [current_tramite, setCurrentTramite] = useState({});
 
   const fetchTimeline = async (add = false) => {
     setCurrentLoading(true);
@@ -230,7 +231,7 @@ const TimeLine = ({ tramite = {}, last_updated = null }) => {
                 <input className="capitalize" 
                   type="text" 
                   readOnly 
-                  value={tramite.dependencia.nombre || "Exterior"}
+                  value={current_tramite?.dependencia_origen?.nombre || "Exterior"}
                 />
               </Form.Field>
 
@@ -238,7 +239,7 @@ const TimeLine = ({ tramite = {}, last_updated = null }) => {
                 <label htmlFor="">Tipo Documento</label>
                 <input type="text" 
                   readOnly 
-                  value={tramite.tramite_type.description || ""}
+                  value={current_tramite?.current_tramite_type?.description || ""}
                 />
               </Form.Field>
 
@@ -246,7 +247,7 @@ const TimeLine = ({ tramite = {}, last_updated = null }) => {
                 <label htmlFor="">N° Documento</label>
                 <input type="text"
                   readOnly 
-                  value={tramite?.document_number || ""}
+                  value={current_tramite?.document_number || ""}
                 />
               </Form.Field>
 
@@ -254,7 +255,7 @@ const TimeLine = ({ tramite = {}, last_updated = null }) => {
                 <label htmlFor="">Asunto</label>
                 <textarea rows="3"
                   readOnly 
-                  value={tramite?.asunto || ""}
+                  value={current_tramite?.asunto || ""}
                 />
               </Form.Field>
 
@@ -262,7 +263,7 @@ const TimeLine = ({ tramite = {}, last_updated = null }) => {
                 <label htmlFor="">N° Folio</label>
                 <input type="text"
                   readOnly 
-                  value={tramite?.folio_count || ""}
+                  value={current_tramite?.folio_count || ""}
                 />
               </Form.Field>
 
@@ -270,7 +271,7 @@ const TimeLine = ({ tramite = {}, last_updated = null }) => {
                 <label htmlFor="">Observación</label>
                 <textarea rows="3"
                   readOnly 
-                  value={tramite?.observation || ""}
+                  value={current_tramite?.observation || ""}
                 />
               </Form.Field>
 
@@ -279,8 +280,8 @@ const TimeLine = ({ tramite = {}, last_updated = null }) => {
               <hr/>
 
               {/* archivos */}
-              <Show condicion={tramite?.files?.length || false}>
-                {tramite?.files.map((f, indexF) => 
+              <Show condicion={current_tramite?.files?.length || false}>
+                {current_tramite?.files?.map((f, indexF) => 
                   <a href={f.url} 
                     key={`list-file-${indexF}`} 
                     className="card card-body"
