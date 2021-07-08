@@ -6,7 +6,6 @@ import Show from "./show";
 
 export default function InfoTramite({ tramite }) {
   const [show_file, setshow_file] = useState(false);
-  let { files } = tramite;
   return (
     <div className="row">
       <div className="col-md-6">
@@ -32,7 +31,7 @@ export default function InfoTramite({ tramite }) {
                 <i className="fas fa-passport"></i> Tipo de Documento
               </Table.Cell>
               <Table.Cell>
-                {tramite && tramite.person && tramite.person.document_type}
+                {tramite?.person?.document_type?.name}
               </Table.Cell>
             </Table.Row>
             <Table.Row>
@@ -41,7 +40,7 @@ export default function InfoTramite({ tramite }) {
                 Nro de Documento
               </Table.Cell>
               <Table.Cell>
-                {tramite && tramite.person && tramite.person.document_number}
+                {tramite?.person?.document_number}
               </Table.Cell>
             </Table.Row>
             <Table.Row>
@@ -49,9 +48,7 @@ export default function InfoTramite({ tramite }) {
                 <i className="far fa-user"></i> Nombres y Apellidos
               </Table.Cell>
               <Table.Cell>
-                {tramite &&
-                  tramite.person &&
-                  tramite.person.fullname.toUpperCase()}
+                {tramite?.person?.fullname?.toUpperCase()}
               </Table.Cell>
             </Table.Row>
             <Table.Row>
@@ -59,7 +56,7 @@ export default function InfoTramite({ tramite }) {
                 <i className="fas fa-map-marker-alt"></i> Direccion
               </Table.Cell>
               <Table.Cell>
-                {tramite && tramite.person && tramite.person.address}
+                {tramite?.person?.address}
               </Table.Cell>
             </Table.Row>
             <Table.Row>
@@ -67,7 +64,7 @@ export default function InfoTramite({ tramite }) {
                 <i className="fas fa-inbox "></i> E-Mail
               </Table.Cell>
               <Table.Cell>
-                {tramite && tramite.person && tramite.person.email_contact}
+                {tramite?.person?.email_contact}
               </Table.Cell>
             </Table.Row>
           </Table.Body>
@@ -92,36 +89,34 @@ export default function InfoTramite({ tramite }) {
           </Table.Header>
 
           <Table.Body>
-            {/* <Table.Row>
+            <Table.Row>
               <Table.Cell width="5">
-                <i className="fas fa-passport "></i> Entidad
+                <i className="fas fa-building "></i> Dependencia Origen
               </Table.Cell>
               <Table.Cell className="capitalize">
-                {tramite && tramite.entity && tramite.entity.name}
+                {tramite?.dependencia?.nombre || 'Exterior'}
               </Table.Cell>
-            </Table.Row> */}
+            </Table.Row>
 
             <Table.Row>
               <Table.Cell width="5">
                 <i className="fas fa-passport "></i> Tipo Documento
               </Table.Cell>
               <Table.Cell>
-                {tramite &&
-                  tramite.tramite_type &&
-                  tramite.tramite_type.description}
+                {tramite?.tramite_type?.description || {}}
               </Table.Cell>
             </Table.Row>
             <Table.Row>
               <Table.Cell>
                 <i className="fas fa-file-pdf"></i> Nro Documento
               </Table.Cell>
-              <Table.Cell>{tramite && tramite.document_number}</Table.Cell>
+              <Table.Cell>{tramite?.document_number}</Table.Cell>
             </Table.Row>
             <Table.Row>
               <Table.Cell>
                 <i className="far fa-comment-dots"></i> Asunto
               </Table.Cell>
-              <Table.Cell>{tramite && tramite.asunto}</Table.Cell>
+              <Table.Cell>{tramite?.asunto}</Table.Cell>
             </Table.Row>
             <Table.Row>
               <Table.Cell>
@@ -155,8 +150,8 @@ export default function InfoTramite({ tramite }) {
             </Table.Header>
 
             <Table.Body>
-              <Show condicion={files && files.length || false}>
-                {files.map((e, iter) => (
+              <Show condicion={tramite?.files?.length}>
+                {tramite?.files?.map((e, iter) => (
                   <Table.Row key={iter}>
                     <Table.Cell>
                       {`${e.name}`} <Icon name="file pdf outline" />

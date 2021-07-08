@@ -1,9 +1,9 @@
-import React, { Component, Fragment, useState, useEffect } from "react";
+import React, { Fragment, useEffect, useState, useMemo } from "react";
 import {
   VerticalTimeline,
   VerticalTimelineElement,
 } from "react-vertical-timeline-component";
-import { Form, Icon, Table } from "semantic-ui-react";
+import { Form, Icon, Table, Loader, Button } from "semantic-ui-react";
 import SendRoundedIcon from "@material-ui/icons/SendRounded";
 import CallMissedOutgoingRoundedIcon from "@material-ui/icons/CallMissedOutgoingRounded";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
@@ -17,8 +17,7 @@ import Show from "./show";
 import moment from "moment";
 import CreateIcon from "@material-ui/icons/Create";
 import SearchIcon from "@material-ui/icons/Search";
-import InfoTramite from "./infoTramite";
-const api_tramite = tramite;
+import { getTimeline } from '../services/request/tramite';
 
 moment().locale('es');
 
@@ -166,100 +165,153 @@ const ItemLine = ({ tracking, onClick = null }) => {
   )
 }
 
-const TimeLine = ({ trackings, setLoading }) => {
+const TimeLine = ({ tramite = {}, last_updated = null }) => {
 
   // estados
-  const [trackingg, settracking] = useState(trackings.data);
-  const [current_tramite, setCurrentTramite] = useState({});
+  const [current_loading, setCurrentLoading] = useState(false);
   const [option, setOption] = useState("");
+  const [datos, setDatos] = useState([]);
+  const [page, setPage] = useState(1);
+  const [last_page, setLastPage] = useState(0);
+
+  const fetchTimeline = async (add = false) => {
+    setCurrentLoading(true);
+    await getTimeline (tramite.slug, page)
+    .then(res => {
+      let { trackings } = res;
+      setPage(trackings.page || 1);
+      setLastPage(trackings.lastPage || 0);
+      setDatos(add ? [...datos, ...trackings.data] : trackings.data);
+    })
+    .catch(err => console.log(err));
+    setCurrentLoading(false);
+  }
+
+  const clearDatos = () => {
+    setPage(1);
+    setDatos([]);
+    setLastPage(0);
+  }
+
+  const isNextPage = useMemo(() => {
+    return last_page >= (page + 1);
+  }, [datos]);
+
+  useEffect(() => {
+    if (tramite.id) fetchTimeline();
+    return () => clearDatos();
+  }, [tramite.id, last_updated]);
+
+  useEffect(() => {
+    if (page > 1) fetchTimeline(true);
+  }, [page]);
 
   // render
   return (
-    <VerticalTimeline>
-      {trackingg.map((track, iter) => (
-        <ItemLine tracking={track}
-          key={`list-line-${iter}`}
-          onClick={(tra) => {
-            setOption(options.TRAMITE)
-            setCurrentTramite(tra);
-          }}
-        />
-      ))}
-      {/* mostra más información del tracking */}
-      <Show condicion={option == options.TRAMITE}>
-        <VerArchivo header="Información del trámite"
-          onClose={(e) => setOption('')}
-        >
-          <div className="text-left">
-            <Form.Field className="mb-3">
-              <label htmlFor="">Dependencia Origen</label>
-              <input className="capitalize" 
-                type="text" 
-                readOnly 
-                value={current_tramite.dependencia_origen && current_tramite.dependencia_origen.nombre || "Exterior"}
-              />
-            </Form.Field>
+    <>
+      <VerticalTimeline>
+        {datos?.map((track, iter) => (
+          <ItemLine tracking={track}
+            key={`list-line-${iter}`}
+            onClick={(tra) => {
+              setOption(options.TRAMITE)
+              setCurrentTramite(tra);
+            }}
+          />
+        ))}
+        {/* mostra más información del tracking */}
+        <Show condicion={option == options.TRAMITE}>
+          <VerArchivo header="Información del trámite"
+            onClose={(e) => setOption('')}
+          >
+            <div className="text-left">
+              <Form.Field className="mb-3">
+                <label htmlFor="">Dependencia Origen</label>
+                <input className="capitalize" 
+                  type="text" 
+                  readOnly 
+                  value={tramite.dependencia.nombre || "Exterior"}
+                />
+              </Form.Field>
 
-            <Form.Field className="mb-3">
-              <label htmlFor="">Tipo Documento</label>
-              <input type="text" 
-                readOnly 
-                value={current_tramite.tramite_type && current_tramite.tramite_type.description || ""}
-              />
-            </Form.Field>
+              <Form.Field className="mb-3">
+                <label htmlFor="">Tipo Documento</label>
+                <input type="text" 
+                  readOnly 
+                  value={tramite.tramite_type.description || ""}
+                />
+              </Form.Field>
 
-            <Form.Field className="mb-3">
-              <label htmlFor="">N° Documento</label>
-              <input type="text"
-                readOnly 
-                value={current_tramite.document_number || ""}
-              />
-            </Form.Field>
+              <Form.Field className="mb-3">
+                <label htmlFor="">N° Documento</label>
+                <input type="text"
+                  readOnly 
+                  value={tramite?.document_number || ""}
+                />
+              </Form.Field>
 
-            <Form.Field className="mb-3">
-              <label htmlFor="">Asunto</label>
-              <textarea rows="3"
-                readOnly 
-                value={current_tramite.asunto || ""}
-              />
-            </Form.Field>
+              <Form.Field className="mb-3">
+                <label htmlFor="">Asunto</label>
+                <textarea rows="3"
+                  readOnly 
+                  value={tramite?.asunto || ""}
+                />
+              </Form.Field>
 
-            <Form.Field className="mb-3">
-              <label htmlFor="">N° Folio</label>
-              <input type="text"
-                readOnly 
-                value={current_tramite.folio_count || ""}
-              />
-            </Form.Field>
+              <Form.Field className="mb-3">
+                <label htmlFor="">N° Folio</label>
+                <input type="text"
+                  readOnly 
+                  value={tramite?.folio_count || ""}
+                />
+              </Form.Field>
 
-            <Form.Field className="mb-3">
-              <label htmlFor="">Observación</label>
-              <textarea rows="3"
-                readOnly 
-                value={current_tramite.observation || ""}
-              />
-            </Form.Field>
+              <Form.Field className="mb-3">
+                <label htmlFor="">Observación</label>
+                <textarea rows="3"
+                  readOnly 
+                  value={tramite?.observation || ""}
+                />
+              </Form.Field>
 
-            <hr/>
-            <i className="fas fa-file-alt"></i> Archivos
-            <hr/>
+              <hr/>
+              <i className="fas fa-file-alt"></i> Archivos
+              <hr/>
 
-            {/* archivos */}
-            <Show condicion={current_tramite.files && current_tramite.files.length || false}>
-              {current_tramite && current_tramite.files ? current_tramite.files.map((f, indexF) => 
-                <a href={f.url} 
-                  key={`list-file-${indexF}`} 
-                  className="card card-body"
-                  target="__blank"
-                >
-                  {f.name}
-                </a>
-              ): null}
-            </Show>
-          </div>
-        </VerArchivo>
+              {/* archivos */}
+              <Show condicion={tramite?.files?.length || false}>
+                {tramite?.files.map((f, indexF) => 
+                  <a href={f.url} 
+                    key={`list-file-${indexF}`} 
+                    className="card card-body"
+                    target="__blank"
+                  >
+                    {f.name}
+                  </a>
+                )}
+              </Show>
+            </div>
+          </VerArchivo>
+        </Show>
+      </VerticalTimeline>
+      {/* loading */}
+      <Show condicion={current_loading}>
+        <br /><br />
+        <div className="mt-5 pt-5">
+          <Loader active/>
+        </div>
       </Show>
-    </VerticalTimeline>
+      {/* obtener más registros */}
+      <Show condicion={isNextPage}>
+          <Button className="mt-3" 
+            onClick={() => setPage(prev => prev + 1)}
+            color="black" 
+            basic
+          >
+            <i className="fas fa-arrow-down"></i> Obtener más datos
+          </Button>
+      </Show>
+    </>
   );
 };
 

@@ -1,37 +1,26 @@
-import React, { Component, useEffect, useState } from "react";
-import { Form, Button, Input, Image } from "semantic-ui-react";
+import React, { useEffect, useState } from "react";
+import { Form, Button, Input } from "semantic-ui-react";
 import Show from "../components/show";
 import Router from "next/router";
 import InfoTramite from "../components/infoTramite";
-import Swal from "sweetalert2";
-import { findTramite, codigo_qr } from "../services/request/tramite";
-import dynamic from "next/dynamic";
+import { findTramite } from "../services/request/tramite";
 import TimeLine from "../components/TimeLine";
+import moment from "moment";
 
 const index = (props) => {
   let { success, tramite, trackings, query } = props;
   const [slug, setslug] = useState(query.slug || "");
   const [lenght, setlenght] = useState(0);
-  const [img, setimg] = useState("");
 
   useEffect(() => {
     if (query.slug) {
       setting();
-      message(success);
     }
+
     setslug(query.slug || "");
   }, [query.slug]);
-
-  const message = async (success) => {
-    if (success) {
-      // await Swal.fire({ text: "Tramite encontrado", icon: "success" });
-    } else {
-      await Swal.fire({ text: "Tramite no encontrado", icon: "error" });
-    }
-  };
   
   const setting = async () => {
-    setimg(await codigo_qr(query.slug));
     setslug((props.query && props.query.slug) || slug);
     setlenght(await parseFloat((props.query && props.query.lenght) || lenght));
   };
@@ -41,10 +30,9 @@ const index = (props) => {
       let { push, query } = Router;
       query.slug = slug;
       query.lenght = lenght;
+      query.last_updated = moment().valueOf();
       push({ pathname: location.pathname, query });
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
 
   const handleInput = ({ value }) => {
@@ -86,7 +74,7 @@ const index = (props) => {
 
                 <div className="col-md-3 col-lg-2 mt-4 col-6">
                   <img
-                    src={img || ""}
+                    src={tramite?.code_qr || ""}
                     style={{
                       width: "100%",
                       height: "100%",
@@ -96,7 +84,7 @@ const index = (props) => {
                 </div>
 
                 <div className="col-md-12 mt-4">
-                  <TimeLine trackings={trackings} {...props} />
+                  <TimeLine tramite={tramite} last_updated={query?.last_updated} {...props} />
                 </div>
               </div>
             </div>

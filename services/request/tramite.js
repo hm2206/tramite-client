@@ -1,5 +1,25 @@
 import { tramite } from "../apis";
 
+export const getTimeline = async (slug, page = 1, ctx = null) => {
+  if (!slug) {
+    return {
+      success: false,
+      status: 501,
+      message: null,
+      trackings: {},
+    };
+  }
+  return await tramite
+    .get(`tramite/${slug}/timeline?page=${page}`, {}, ctx)
+    .then((res) => res.data)
+    .catch((err) => ({
+      success: false,
+      status: err.status,
+      message: err.message,
+      trackings: {},
+    }));
+};
+
 export const findTramite = async (ctx) => {
   let { slug } = ctx.query;
   if (!slug) {
@@ -11,15 +31,16 @@ export const findTramite = async (ctx) => {
     };
   }
   return await tramite
-    .get(`tramite/${slug}/timeline`, {}, ctx)
+    .get(`tramite/${slug}?column=slug`, {}, ctx)
     .then((res) => res.data)
     .catch((err) => ({
-      success: false,
-      status: err.status,
-      message: err.message,
-      tramite: {},
-    }));
+        success: false,
+        status: err.status,
+        message: err.message,
+        tramite: {},
+      }));
 };
+
 export const codigo_qr = async (slug) => {
   if (!slug) {
     return {
