@@ -102,7 +102,7 @@ const ItemLine = ({ tracking, onClick = null }) => {
         <h4 className="vertical-timeline-element-subtitle">
           {current_status.message}
           <span className="badge badge-dark">
-            {dependencia && `${dependencia.nombre}`.toUpperCase()}
+            {`${dependencia?.nombre  || 'EXTERIOR'}`.toUpperCase()}
           </span>
         </h4>
         <hr></hr>
