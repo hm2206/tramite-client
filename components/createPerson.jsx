@@ -84,7 +84,7 @@ const CreatePerson = ({ onCancel = null, readOnly = [] }) => {
                     loading={current_loading}
                     onClick={handleSave}
                 >
-                    <i className="fas fa-save"></i> Guardar Datos
+                    <i className="fas fa-arrow-right"></i> Continuar
                 </Button>
             </div>
         </FormPerson>
