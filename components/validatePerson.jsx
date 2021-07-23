@@ -56,6 +56,9 @@ const ValidatePerson = () => {
                 cod_dep: persona?.ubigeo?.departamento,
                 cod_pro: persona?.ubigeo?.provincia,
                 cod_dis: persona?.ubigeo?.distrito,
+                marital_status: "S",
+                phone: "999999999",
+                address: "S/D"
             });
             
             setReadOnly([
