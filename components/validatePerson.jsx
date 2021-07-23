@@ -50,12 +50,18 @@ const ValidatePerson = () => {
                 ape_mat: persona.apellido_materno,
                 name: persona.nombres,
                 date_of_birth: persona.fecha_nacimiento,
-                profession: 'Est'
+                profession: 'Sr(a)',
+                gender: persona?.sexo,
+                email_contact: persona?.email || 'tramite_client@unia.edu.pe',
+                cod_dep: persona?.ubigeo?.departamento,
+                cod_pro: persona?.ubigeo?.provincia,
+                cod_dis: persona?.ubigeo?.distrito,
             });
             
             setReadOnly([
                 'document_type_id', 'document_number', 'ape_pat', 
-                'ape_mat', 'name', 'date_of_birth', 'profession'
+                'ape_mat', 'name', 'date_of_birth', 'profession',
+                'gender', 'cod_dep', 'cod_pro', 'cod_dis'
             ]);
 
             setIsError(false); 

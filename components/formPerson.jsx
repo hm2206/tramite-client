@@ -148,7 +148,7 @@ const FormPerson = ({ form = {}, errors = {}, disabled = false, readOnly = [], o
                         <SelectDepartamento 
                             name="cod_dep" 
                             id="cod_dep"
-                            disabled={disabled}
+                            disabled={disabled || readOnly.includes('cod_dep')}
                             value={form.cod_dep}
                             onChange={(e, obj) => handleInput(e, obj)}
                         />
@@ -163,7 +163,7 @@ const FormPerson = ({ form = {}, errors = {}, disabled = false, readOnly = [], o
                             name="cod_pro" 
                             departamento_id={form.cod_dep}
                             id="cod_pro"
-                            disabled={disabled && form.cod_pro}
+                            disabled={(disabled && form.cod_pro) || readOnly.includes('cod_pro')}
                             value={form.cod_pro}
                             refresh={form.cod_dep}
                             onChange={(e, obj) => handleInput(e, obj)}
@@ -180,7 +180,7 @@ const FormPerson = ({ form = {}, errors = {}, disabled = false, readOnly = [], o
                             departamento_id={form.cod_dep}
                             provincia_id={form.cod_pro}
                             id="cod_dis"
-                            disabled={disabled && form.cod_dis}
+                            disabled={(disabled && form.cod_dis) || readOnly.includes('cod_dis')}
                             value={form.cod_dis}
                             refresh={form.cod_pro}
                             onChange={(e, obj) => handleInput(e, obj)}
