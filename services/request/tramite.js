@@ -1,6 +1,6 @@
 import { tramite } from "../apis";
 
-export const getTimeline = async (slug, page = 1, ctx = null) => {
+export const getTimeline = async (slug, page = 1) => {
   if (!slug) {
     return {
       success: false,
@@ -10,7 +10,7 @@ export const getTimeline = async (slug, page = 1, ctx = null) => {
     };
   }
   return await tramite
-    .get(`tramite/${slug}/timeline?page=${page}`, {}, ctx)
+    .get(`tramite/${slug}/timeline?page=${page}`)
     .then((res) => res.data)
     .catch((err) => ({
       success: false,
@@ -20,8 +20,7 @@ export const getTimeline = async (slug, page = 1, ctx = null) => {
     }));
 };
 
-export const findTramite = async (ctx) => {
-  let { slug } = ctx.query;
+export const findTramite = async (slug) => {
   if (!slug) {
     return {
       success: false,
@@ -31,7 +30,7 @@ export const findTramite = async (ctx) => {
     };
   }
   return await tramite
-    .get(`tramite/${slug}?column=slug`, {}, ctx)
+    .get(`tramite/${slug}?column=slug`)
     .then((res) => res.data)
     .catch((err) => ({
         success: false,
@@ -52,12 +51,10 @@ export const codigo_qr = async (slug) => {
   }
   return await tramite
     .get(`tramite/${slug}/code_qr`, { responseType: "blob" })
-
     .then(async (res) => {
       let type = res.headers["content-type"];
       let blob = new Blob([res.data], { type });
       let url = await URL.createObjectURL(blob);
-
       return url;
     })
     .catch((err) => ({

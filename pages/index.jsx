@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import { Form, Button, Input } from "semantic-ui-react";
 import Show from "../components/show";
 import Router from "next/router";
@@ -7,31 +8,41 @@ import { findTramite } from "../services/request/tramite";
 import TimeLine from "../components/TimeLine";
 import moment from "moment";
 
-const index = (props) => {
-  let { success, tramite, trackings, query } = props;
-  const [slug, setslug] = useState(query.slug || "");
+const Index = (props) => {
+  const router = useRouter();
+  const { query } = router;
+
+  const [slug, setslug] = useState("");
   const [lenght, setlenght] = useState(0);
+  const [success, setSuccess] = useState(false);
+  const [tramite, setTramite] = useState({});
+  const [trackings, setTrackings] = useState({});
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (query.slug) {
-      setting();
+      setslug(query.slug);
+      setlenght(query.slug.length);
+      fetchTramite(query.slug);
     }
-
-    setslug(query.slug || "");
   }, [query.slug]);
-  
-  const setting = async () => {
-    setslug((props.query && props.query.slug) || slug);
-    setlenght(await parseFloat((props.query && props.query.lenght) || lenght));
+
+  const fetchTramite = async (slugParam) => {
+    setLoading(true);
+    const result = await findTramite(slugParam);
+    setSuccess(result.success);
+    setTramite(result.tramite || {});
+    setTrackings(result.trackings || {});
+    setLoading(false);
   };
 
   const handleSearch = () => {
     try {
-      let { push, query } = Router;
-      query.slug = slug;
-      query.lenght = lenght;
-      query.last_updated = moment().valueOf();
-      push({ pathname: location.pathname, query });
+      let newQuery = { ...query };
+      newQuery.slug = slug;
+      newQuery.lenght = lenght;
+      newQuery.last_updated = moment().valueOf();
+      Router.push({ pathname: location.pathname, query: newQuery });
     } catch (error) {}
   };
 
@@ -58,8 +69,9 @@ const index = (props) => {
             <Button
               className="btn-convocatoria"
               fluid
-              disabled={lenght < 10}
+              disabled={lenght < 10 || loading}
               onClick={(e) => handleSearch()}
+              loading={loading}
             >
               <i className="fas fa-search"></i> Buscar
             </Button>
@@ -95,10 +107,4 @@ const index = (props) => {
   );
 };
 
-index.getInitialProps = async (ctx) => {
-  let { query, pathname } = ctx;
-  let { tramite, success, trackings } = await findTramite(ctx);
-  return { query, pathname, tramite, trackings, success };
-};
-
-export default index;
+export default Index;
