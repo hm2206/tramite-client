@@ -46,7 +46,7 @@ const Navbar: React.FC<NavbarProps> = ({ app }) => {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <Link
-            href={assetPath("/")}
+            href={assetPath("")}
             className="flex items-center space-x-3 group"
           >
             <div
@@ -79,7 +79,7 @@ const Navbar: React.FC<NavbarProps> = ({ app }) => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-3">
             <Link
-              href={assetPath("/")}
+              href={assetPath("")}
               className={`flex items-center space-x-2 px-4 py-2 rounded-xl font-medium transition-all duration-200 ${linkClass}`}
             >
               <Search className="h-4 w-4" />

@@ -58,11 +58,9 @@ const Index = (props: any) => {
       newQuery.slug = slug;
       newQuery.length = String(length);
       newQuery.last_updated = String(moment().valueOf());
-      Router.push(
-        { pathname: assetPath(router.pathname), query: newQuery },
-        undefined,
-        { shallow: true }
-      );
+      Router.push({ pathname: assetPath(""), query: newQuery }, undefined, {
+        shallow: true,
+      });
       handleFetchTramite(slug);
     } catch (error) {
       console.error("Search error:", error);

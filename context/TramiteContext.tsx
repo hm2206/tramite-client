@@ -1,6 +1,12 @@
-import React, { createContext, useState, useMemo, useEffect, ReactNode } from 'react';
-import ValidatePerson from '../components/validatePerson';
-import CreateTramite from '../components/createTramite';
+import React, {
+  createContext,
+  useState,
+  useMemo,
+  useEffect,
+  ReactNode,
+} from "react";
+import ValidatePerson from "../components/validatePerson";
+import CreateTramite from "../components/createTramite";
 
 interface PersonData {
   [key: string]: any;
@@ -30,14 +36,18 @@ interface TramiteContextType {
   Component: ReactNode;
 }
 
-export const TramiteContext = createContext<TramiteContextType>({} as TramiteContextType);
+export const TramiteContext = createContext<TramiteContextType>(
+  {} as TramiteContextType
+);
 
 interface TramiteProviderProps {
   children?: ReactNode;
 }
 
-export const TramiteProvider: React.FC<TramiteProviderProps> = ({ children }) => {
-  const [tab, setTab] = useState<string>('validate');
+export const TramiteProvider: React.FC<TramiteProviderProps> = ({
+  children,
+}) => {
+  const [tab, setTab] = useState<string>("validate");
   const [person, setPerson] = useState<PersonData>({});
   const [tramite, setTramite] = useState<TramiteData>({});
   const [complete, setComplete] = useState<string[]>([]);
@@ -47,12 +57,12 @@ export const TramiteProvider: React.FC<TramiteProviderProps> = ({ children }) =>
       name: "validate",
       render: <ValidatePerson />,
       rule: person,
-      ruleType: 'object'
+      ruleType: "object",
     },
     tramite: {
       name: "tramite",
-      render: <CreateTramite />
-    }
+      render: <CreateTramite />,
+    },
   };
 
   const Component = useMemo(() => {
@@ -71,7 +81,7 @@ export const TramiteProvider: React.FC<TramiteProviderProps> = ({ children }) =>
       if (!isRule) return;
     }
     setTab(next);
-    setComplete(prev => [...prev, name]);
+    setComplete((prev) => [...prev, name]);
   };
 
   useEffect(() => {
@@ -79,18 +89,20 @@ export const TramiteProvider: React.FC<TramiteProviderProps> = ({ children }) =>
   }, []);
 
   return (
-    <TramiteContext.Provider value={{
-      tab,
-      setTab,
-      nextTab,
-      person,
-      setPerson,
-      tramite,
-      setTramite,
-      complete,
-      setComplete,
-      Component
-    }}>
+    <TramiteContext.Provider
+      value={{
+        tab,
+        setTab,
+        nextTab,
+        person,
+        setPerson,
+        tramite,
+        setTramite,
+        complete,
+        setComplete,
+        Component,
+      }}
+    >
       {children || null}
     </TramiteContext.Provider>
   );

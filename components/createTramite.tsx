@@ -1,15 +1,28 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { FileText, Building2, Hash, MessageSquare, BookOpen, Upload, CheckSquare, X, Send, Loader2, AlertCircle } from 'lucide-react';
-import Swal from 'sweetalert2';
-import Show from '../components/show';
-import Router from 'next/router';
-import DropZone from '../components/dropzone';
-import { SelectEntity } from './selects/authentication';
-import { SelectTramiteType, SelectDependenciaExterna } from './selects/tramite';
-import collect from 'collect.js';
-import { TramiteContext } from '../context/TramiteContext';
-import { useCreateTramiteMutation } from '../store/api/tramiteApi';
-import { useLazyGetStudentFromSigaQuery } from '../store/api/authApi';
+import React, { useContext, useEffect, useMemo, useState } from "react";
+import {
+  FileText,
+  Building2,
+  Hash,
+  MessageSquare,
+  BookOpen,
+  Upload,
+  CheckSquare,
+  X,
+  Send,
+  Loader2,
+  AlertCircle,
+} from "lucide-react";
+import Swal from "sweetalert2";
+import Show from "../components/show";
+import Router from "next/router";
+import DropZone from "../components/dropzone";
+import { SelectEntity } from "./selects/authentication";
+import { SelectTramiteType, SelectDependenciaExterna } from "./selects/tramite";
+import collect from "collect.js";
+import { TramiteContext } from "../context/TramiteContext";
+import { useCreateTramiteMutation } from "../store/api/tramiteApi";
+import { useLazyGetStudentFromSigaQuery } from "../store/api/authApi";
+import { assetPath } from "@/utils/assetPath";
 
 interface FormErrors {
   [key: string]: string[];
@@ -47,7 +60,15 @@ const CreateTramite = () => {
   const current_loading = isCreating || block;
 
   const formReady = useMemo(() => {
-    let datos = ['entity_id', 'document_number', 'dependencia_id', 'tramite_type_id', 'asunto', 'folio_count', 'termino'];
+    let datos = [
+      "entity_id",
+      "document_number",
+      "dependencia_id",
+      "tramite_type_id",
+      "asunto",
+      "folio_count",
+      "termino",
+    ];
     for (let attr of datos) {
       let isValue = form[attr];
       if (!isValue) return false;
@@ -69,7 +90,7 @@ const CreateTramite = () => {
       setCode(null);
     }
     setBlock(false);
-  }
+  };
 
   const handleInput = async ({ name, value }: { name: string; value: any }) => {
     let newForm = Object.assign({}, form);
@@ -78,7 +99,7 @@ const CreateTramite = () => {
     let newErrors = Object.assign({}, errors);
     newErrors[name] = [];
     setErrors(newErrors);
-  }
+  };
 
   const handleFiles = ({ files }: { files: FileList }) => {
     let size_total = file.size;
@@ -86,38 +107,44 @@ const CreateTramite = () => {
     let newFile = Object.assign({}, file);
     let collectFile = collect([...newFile.data]);
     for (let f of Array.from(files)) {
-      let isExists = collectFile.where('name', f.name).count();
+      let isExists = collectFile.where("name", f.name).count();
       if (isExists) continue;
       size_total += f.size;
       newFile.size += size_total;
-      if ((size_total / 1024) <= size_limit) {
+      if (size_total / 1024 <= size_limit) {
         newFile.data.push(f);
         setFile(newFile);
         collectFile.push(f);
       } else {
         size_total = size_total - f.size;
-        Swal.fire({ icon: 'error', text: `El límite máximo es de 25MB, tamaño actual(${(size_total / (1024 * 1024)).toFixed(2)} MB` });
+        Swal.fire({
+          icon: "error",
+          text: `El límite máximo es de 25MB, tamaño actual(${(
+            size_total /
+            (1024 * 1024)
+          ).toFixed(2)} MB`,
+        });
         return false;
       }
     }
     return false;
-  }
+  };
 
   const deleteFile = (index: number, tmpFile: File) => {
     let newFile = Object.assign({}, file);
     newFile.data.splice(index, 1);
     newFile.size = newFile.size - tmpFile.size;
     setFile(newFile);
-  }
+  };
 
   const handleSave = async () => {
     const payload = new FormData();
-    payload.append('person_id', person.id);
+    payload.append("person_id", person.id);
     for (let attr in form) {
-      if (attr !== 'files') payload.append(attr, form[attr]);
+      if (attr !== "files") payload.append(attr, form[attr]);
     }
-    file.data.forEach(f => payload.append('files', f));
-    payload.append('code', code || '');
+    file.data.forEach((f) => payload.append("files", f));
+    payload.append("code", code || "");
 
     try {
       const result = await createTramite(payload).unwrap();
@@ -125,23 +152,29 @@ const CreateTramite = () => {
 
       if (!success) throw new Error(message);
 
-      await Swal.fire({ icon: 'success', text: message });
+      await Swal.fire({ icon: "success", text: message });
       setForm({});
-      Router.push({ pathname: '/', query: { slug: current_tramite.slug } });
+      Router.push({
+        pathname: assetPath(""),
+        query: { slug: current_tramite.slug },
+      });
     } catch (err: any) {
       const response = err?.data || err;
-      let message = response?.message || err?.message || "Ocurrió un error al crear el trámite";
+      let message =
+        response?.message ||
+        err?.message ||
+        "Ocurrió un error al crear el trámite";
       const newErrors: FormErrors = response?.errors || {};
 
-      Swal.fire({ icon: 'warning', text: message });
+      Swal.fire({ icon: "warning", text: message });
       setErrors(newErrors);
     }
-  }
+  };
 
   const handleCancel = () => {
     setPerson({});
-    nextTab('validate', 'validate');
-  }
+    nextTab("validate", "validate");
+  };
 
   useEffect(() => {
     if (person.id) getEstudiante();
@@ -155,8 +188,12 @@ const CreateTramite = () => {
           <FileText className="h-6 w-6 text-[#00a28a]" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-gray-800">Registro de Trámite</h2>
-          <p className="text-sm text-gray-500">Complete la información del documento</p>
+          <h2 className="text-xl font-bold text-gray-800">
+            Registro de Trámite
+          </h2>
+          <p className="text-sm text-gray-500">
+            Complete la información del documento
+          </p>
         </div>
       </div>
 
@@ -236,8 +273,11 @@ const CreateTramite = () => {
               value={form.document_number || ""}
               disabled={current_loading}
               onChange={(e) => handleInput(e.target)}
-              className={`w-full px-4 py-3 bg-gray-50 border-2 rounded-xl focus:border-[#00a28a] focus:ring-4 focus:ring-[#00a28a]/10 transition-all duration-200 outline-none ${errors?.document_number?.[0] ? 'border-red-300' : 'border-gray-200'
-                }`}
+              className={`w-full px-4 py-3 bg-gray-50 border-2 rounded-xl focus:border-[#00a28a] focus:ring-4 focus:ring-[#00a28a]/10 transition-all duration-200 outline-none ${
+                errors?.document_number?.[0]
+                  ? "border-red-300"
+                  : "border-gray-200"
+              }`}
               placeholder="Ej: DOC-2024-001"
             />
             <Show condicion={errors?.document_number?.[0]}>
@@ -259,8 +299,9 @@ const CreateTramite = () => {
               value={form.folio_count || ""}
               onChange={(e) => handleInput(e.target)}
               disabled={current_loading}
-              className={`w-full px-4 py-3 bg-gray-50 border-2 rounded-xl focus:border-[#00a28a] focus:ring-4 focus:ring-[#00a28a]/10 transition-all duration-200 outline-none ${errors?.folio_count?.[0] ? 'border-red-300' : 'border-gray-200'
-                }`}
+              className={`w-full px-4 py-3 bg-gray-50 border-2 rounded-xl focus:border-[#00a28a] focus:ring-4 focus:ring-[#00a28a]/10 transition-all duration-200 outline-none ${
+                errors?.folio_count?.[0] ? "border-red-300" : "border-gray-200"
+              }`}
               placeholder="Ej: 5"
             />
             <Show condicion={errors?.folio_count?.[0]}>
@@ -284,8 +325,9 @@ const CreateTramite = () => {
             value={form.asunto || ""}
             onChange={(e) => handleInput(e.target)}
             disabled={current_loading}
-            className={`w-full px-4 py-3 bg-gray-50 border-2 rounded-xl focus:border-[#00a28a] focus:ring-4 focus:ring-[#00a28a]/10 transition-all duration-200 outline-none resize-none ${errors?.asunto?.[0] ? 'border-red-300' : 'border-gray-200'
-              }`}
+            className={`w-full px-4 py-3 bg-gray-50 border-2 rounded-xl focus:border-[#00a28a] focus:ring-4 focus:ring-[#00a28a]/10 transition-all duration-200 outline-none resize-none ${
+              errors?.asunto?.[0] ? "border-red-300" : "border-gray-200"
+            }`}
             placeholder="Describa el asunto de su trámite..."
           />
           <Show condicion={errors?.asunto?.[0]}>
@@ -322,21 +364,27 @@ const CreateTramite = () => {
               <input
                 type="checkbox"
                 checked={form.termino || false}
-                onChange={(e) => handleInput({ name: 'termino', value: e.target.checked })}
+                onChange={(e) =>
+                  handleInput({ name: "termino", value: e.target.checked })
+                }
                 disabled={current_loading}
                 className="sr-only peer"
               />
-              <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-200 ${form.termino
-                  ? 'bg-[#00a28a] border-[#00a28a]'
-                  : 'bg-white border-gray-300 peer-hover:border-[#00a28a]'
-                }`}>
+              <div
+                className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-200 ${
+                  form.termino
+                    ? "bg-[#00a28a] border-[#00a28a]"
+                    : "bg-white border-gray-300 peer-hover:border-[#00a28a]"
+                }`}
+              >
                 <Show condicion={form.termino}>
                   <CheckSquare className="h-4 w-4 text-white" />
                 </Show>
               </div>
             </div>
             <span className="text-sm text-gray-600">
-              Declaro bajo penalidad de perjurio, que toda la información proporcionada es correcta y verídica
+              Declaro bajo penalidad de perjurio, que toda la información
+              proporcionada es correcta y verídica
             </span>
           </label>
         </div>
@@ -354,10 +402,11 @@ const CreateTramite = () => {
           <button
             onClick={handleSave}
             disabled={!formReady || current_loading}
-            className={`inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl font-semibold transition-all duration-300 ${formReady && !current_loading
-                ? 'bg-gradient-to-r from-[#00a28a] to-[#00c9a7] text-white shadow-lg shadow-[#00a28a]/30 hover:shadow-xl'
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-              }`}
+            className={`inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl font-semibold transition-all duration-300 ${
+              formReady && !current_loading
+                ? "bg-gradient-to-r from-[#00a28a] to-[#00c9a7] text-white shadow-lg shadow-[#00a28a]/30 hover:shadow-xl"
+                : "bg-gray-200 text-gray-400 cursor-not-allowed"
+            }`}
           >
             {current_loading ? (
               <>
@@ -374,7 +423,7 @@ const CreateTramite = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default CreateTramite;

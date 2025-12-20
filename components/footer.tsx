@@ -77,7 +77,7 @@ const Footer: React.FC<FooterProps> = ({ app }) => {
             <ul className="space-y-3">
               <li>
                 <Link
-                  href={assetPath("/")}
+                  href={assetPath("")}
                   className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group"
                 >
                   <Search className="h-4 w-4 text-[#00a28a] group-hover:text-[#00c9a7]" />
