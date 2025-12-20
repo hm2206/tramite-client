@@ -1,0 +1,336 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 164 100% 32%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 164 100% 95%;
+    --accent-foreground: 164 100% 25%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 164 100% 32%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 164 100% 40%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 164 100% 40%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', 'Roboto', system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer components {
+  /* Gradient backgrounds */
+  .bg-gradient-primary {
+    @apply bg-gradient-to-r from-[#00a28a] to-[#00c9a7];
+  }
+
+  .bg-gradient-hero {
+    @apply bg-gradient-to-br from-[#00a28a] via-[#00b89c] to-[#00d4aa];
+  }
+
+  .bg-gradient-subtle {
+    @apply bg-gradient-to-b from-gray-50 to-white;
+  }
+
+  /* Glass effect */
+  .glass {
+    @apply bg-white/80 backdrop-blur-lg border border-white/20;
+  }
+
+  .glass-dark {
+    @apply bg-black/20 backdrop-blur-lg border border-white/10;
+  }
+
+  /* Card styles */
+  .card-elegant {
+    @apply bg-white rounded-2xl shadow-lg shadow-gray-200/50 border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-gray-200/60;
+  }
+
+  .card-elevated {
+    @apply bg-white rounded-2xl shadow-2xl shadow-gray-300/30 border-0;
+  }
+
+  /* Button styles */
+  .btn-primary {
+    @apply bg-gradient-primary text-white font-semibold py-3 px-6 rounded-xl
+           shadow-lg shadow-[#00a28a]/30 hover:shadow-xl hover:shadow-[#00a28a]/40
+           transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-[#00a28a] font-semibold py-3 px-6 rounded-xl
+           border-2 border-[#00a28a] hover:bg-[#00a28a] hover:text-white
+           transition-all duration-300;
+  }
+
+  .btn-ghost {
+    @apply text-gray-600 font-medium py-2 px-4 rounded-lg
+           hover:bg-gray-100 transition-all duration-200;
+  }
+
+  /* Input styles */
+  .input-elegant {
+    @apply w-full px-5 py-4 text-lg bg-white border-2 border-gray-200 rounded-xl
+           focus:border-[#00a28a] focus:ring-4 focus:ring-[#00a28a]/10
+           transition-all duration-200 outline-none placeholder:text-gray-400;
+  }
+
+  .input-search {
+    @apply w-full px-6 py-4 text-lg bg-white/90 backdrop-blur-sm border-0 rounded-2xl
+           shadow-xl shadow-black/5 focus:ring-4 focus:ring-[#00a28a]/20
+           transition-all duration-200 outline-none placeholder:text-gray-400;
+  }
+
+  /* Status badges */
+  .badge-success {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+           bg-emerald-100 text-emerald-700;
+  }
+
+  .badge-warning {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+           bg-amber-100 text-amber-700;
+  }
+
+  .badge-info {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+           bg-sky-100 text-sky-700;
+  }
+
+  .badge-primary {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+           bg-[#00a28a]/10 text-[#00a28a];
+  }
+
+  /* Section styles */
+  .section-padding {
+    @apply py-16 md:py-24;
+  }
+
+  /* Text styles */
+  .text-gradient {
+    @apply bg-gradient-to-r from-[#00a28a] to-[#00d4aa] bg-clip-text text-transparent;
+  }
+
+  /* Timeline custom styles */
+  .timeline-elegant .vertical-timeline::before {
+    @apply bg-gradient-to-b from-[#00a28a] to-[#00d4aa];
+    width: 3px;
+  }
+
+  .timeline-elegant .vertical-timeline-element-icon {
+    @apply shadow-lg shadow-[#00a28a]/30;
+  }
+
+  /* Table elegant styles */
+  .table-elegant {
+    @apply w-full rounded-xl overflow-hidden;
+  }
+
+  .table-elegant th {
+    @apply bg-gradient-primary text-white font-semibold py-4 px-6 text-left;
+  }
+
+  .table-elegant td {
+    @apply py-4 px-6 border-b border-gray-100;
+  }
+
+  .table-elegant tr:hover td {
+    @apply bg-gray-50;
+  }
+
+  /* Animation utilities */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  /* Decorative elements */
+  .decoration-dots {
+    background-image: radial-gradient(#00a28a 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .decoration-grid {
+    background-image: linear-gradient(#00a28a08 1px, transparent 1px),
+                      linear-gradient(90deg, #00a28a08 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+}
+
+/* Override semantic UI styles */
+.ui.input > input {
+  @apply !border-2 !border-gray-200 !rounded-xl !py-3 !px-4
+         focus:!border-[#00a28a] focus:!ring-2 focus:!ring-[#00a28a]/20;
+}
+
+.ui.button {
+  @apply !rounded-xl !font-semibold !transition-all !duration-200;
+}
+
+.ui.primary.button,
+.ui.button.btn-convocatoria {
+  @apply !bg-gradient-primary !text-white !shadow-lg !shadow-[#00a28a]/30
+         hover:!shadow-xl hover:!shadow-[#00a28a]/40 hover:!opacity-95;
+}
+
+.ui.table {
+  @apply !rounded-xl !overflow-hidden !border-0 !shadow-lg !shadow-gray-200/50;
+}
+
+.ui.table thead th {
+  @apply !bg-gradient-primary !text-white !font-semibold !border-0;
+}
+
+.ui.table tbody td {
+  @apply !border-gray-100;
+}
+
+.ui.celled.table tr td,
+.ui.celled.table tr th {
+  @apply !border-gray-100;
+}
+
+/* Card overrides */
+.ui.card,
+.card {
+  @apply !rounded-2xl !shadow-lg !shadow-gray-200/50 !border !border-gray-100;
+}
+
+.ui.card > .content > .header,
+.card-header {
+  @apply !font-bold !text-gray-800;
+}
+
+/* Loader elegant */
+.loader-elegant {
+  @apply w-12 h-12 border-4 border-gray-200 border-t-[#00a28a] rounded-full animate-spin;
+}
+
+/* Step indicator */
+.ui.steps .step.active {
+  @apply !bg-[#00a28a]/10;
+}
+
+.ui.steps .step.active .title {
+  @apply !text-[#00a28a] !font-bold;
+}
+
+.ui.ordered.steps .step.active::before {
+  @apply !bg-[#00a28a] !text-white;
+}
+
+/* Form field */
+.ui.form .field > label {
+  @apply !text-gray-600 !font-medium !mb-2;
+}
+
+/* Select dropdown */
+.ui.selection.dropdown {
+  @apply !rounded-xl !border-2 !border-gray-200;
+}
+
+.ui.selection.dropdown:focus,
+.ui.selection.active.dropdown {
+  @apply !border-[#00a28a];
+}
+
+/* Timeline component overrides */
+.vertical-timeline::before {
+  background: linear-gradient(to bottom, #00a28a, #00d4aa) !important;
+  width: 3px !important;
+}
+
+.vertical-timeline-element-content {
+  @apply !rounded-2xl !shadow-lg !shadow-gray-200/50 !border !border-gray-100 !p-6;
+}
+
+.vertical-timeline-element-content-arrow {
+  border-right-color: #e5e7eb !important;
+}
+
+.vertical-timeline-element-icon {
+  @apply !shadow-lg !shadow-[#00a28a]/30;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 rounded-full;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full hover:bg-gray-400;
+}
+
+/* Selection */
+::selection {
+  @apply bg-[#00a28a]/20 text-[#00a28a];
+}

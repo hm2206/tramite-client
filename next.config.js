@@ -1,11 +1,6 @@
-
-const env = require('./env.json')
-
+/** @type {import('next').NextConfig} */
 module.exports = {
-    basePath: env.app.base_path,
-    assetPrefix: env.app.asset_prefix,
+    basePath: process.env.NEXT_PUBLIC_BASE_PATH || '',
+    assetPrefix: process.env.NEXT_PUBLIC_ASSET_PREFIX || '',
     distDir: 'build',
-    publicRuntimeConfig: {
-        staticFolder: env.app.asset_prefix
-    }
 }
