@@ -3,8 +3,6 @@ import Link from 'next/link';
 import Router from 'next/router';
 import { FileText, Search, Menu, X } from 'lucide-react';
 
-const ASSET_PREFIX = process.env.NEXT_PUBLIC_ASSET_PREFIX || '';
-
 interface AppInfo {
   icon?: string;
   name?: string;
@@ -42,7 +40,7 @@ const Navbar: React.FC<NavbarProps> = ({ app }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <Link href={ASSET_PREFIX || '/'} className="flex items-center space-x-3 group">
+          <Link href="/" className="flex items-center space-x-3 group">
             <div className={`w-10 h-10 rounded-xl ${logoBg} flex items-center justify-center transition-all duration-300 group-hover:scale-105`}>
               {app.icon ? (
                 <img src={app.icon} alt="Logo" className="h-6 w-6 object-contain" />
@@ -63,14 +61,14 @@ const Navbar: React.FC<NavbarProps> = ({ app }) => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-3">
             <Link
-              href={ASSET_PREFIX || '/'}
+              href="/"
               className={`flex items-center space-x-2 px-4 py-2 rounded-xl font-medium transition-all duration-200 ${linkClass}`}
             >
               <Search className="h-4 w-4" />
               <span>Consultar</span>
             </Link>
             <button
-              onClick={() => Router.push(`${ASSET_PREFIX}/register`)}
+              onClick={() => Router.push('/register')}
               className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 hover:-translate-y-0.5 ${btnClass}`}
             >
               <FileText className="h-4 w-4" />
@@ -96,7 +94,7 @@ const Navbar: React.FC<NavbarProps> = ({ app }) => {
           <div className="md:hidden pb-4 animate-fade-in">
             <div className="flex flex-col space-y-2 bg-white rounded-2xl p-4 shadow-xl border border-gray-100">
               <Link
-                href={ASSET_PREFIX || '/'}
+                href="/"
                 className="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
@@ -105,7 +103,7 @@ const Navbar: React.FC<NavbarProps> = ({ app }) => {
               </Link>
               <button
                 onClick={() => {
-                  Router.push(`${ASSET_PREFIX}/register`);
+                  Router.push('/register');
                   setIsMobileMenuOpen(false);
                 }}
                 className="flex items-center space-x-3 px-4 py-3 rounded-xl bg-gradient-to-r from-[#00a28a] to-[#00c9a7] text-white font-semibold shadow-lg shadow-[#00a28a]/30"

@@ -8,7 +8,6 @@ import TimeLine from "../components/TimeLine";
 import moment from "moment";
 import { useLazyFindTramiteQuery } from "../store/api/tramiteApi";
 
-const ASSET_PREFIX = process.env.NEXT_PUBLIC_ASSET_PREFIX || '';
 
 const Index = (props: any) => {
   const router = useRouter();
@@ -50,7 +49,7 @@ const Index = (props: any) => {
       newQuery.slug = slug;
       newQuery.length = String(length);
       newQuery.last_updated = String(moment().valueOf());
-      Router.push({ pathname: location.pathname, query: newQuery });
+      Router.push({ pathname: router.pathname, query: newQuery });
     } catch (error) {
       console.error('Search error:', error);
     }

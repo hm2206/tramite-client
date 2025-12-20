@@ -15,9 +15,8 @@ import LoadingGlobal from '../components/loadingGlobal';
 import Cookies from 'js-cookie';
 import { store } from '../store';
 import { useGetAppInfoQuery } from '../store/api/authApi';
+import { ASSET_PREFIX, assetPath } from '../utils/assetPath';
 
-const ASSET_PREFIX_RAW = process.env.NEXT_PUBLIC_ASSET_PREFIX || '';
-const ASSET_PREFIX = ASSET_PREFIX_RAW ? (ASSET_PREFIX_RAW.endsWith('/') ? ASSET_PREFIX_RAW : ASSET_PREFIX_RAW + '/') : '';
 const APP_THEME = process.env.NEXT_PUBLIC_APP_THEME || 'default';
 
 Router.events.on('routeChangeStart', () => {
@@ -86,14 +85,14 @@ const AppContent = ({ Component, pageProps }: any) => {
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="Sistema de Trámite Documentario" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="shortcut icon" type="image/x-icon" href={appInfo.icon || ASSET_PREFIX + 'img/loading_page.png'} />
+        <link rel="shortcut icon" type="image/x-icon" href={appInfo.icon || assetPath('img/loading_page.png')} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-        <link rel="stylesheet" href={ASSET_PREFIX + 'css/bootstrap.css'} />
-        <link rel="stylesheet" href={ASSET_PREFIX + 'font-awesome/css/all.min.css'} media="all" />
-        <link rel="stylesheet" type="text/css" href={ASSET_PREFIX + 'css/app.css'} />
-        <link rel="stylesheet" type="text/css" href={ASSET_PREFIX + 'css/page_loading.css'} />
+        <link rel="stylesheet" href={assetPath('css/bootstrap.css')} />
+        <link rel="stylesheet" href={assetPath('font-awesome/css/all.min.css')} media="all" />
+        <link rel="stylesheet" type="text/css" href={assetPath('css/app.css')} />
+        <link rel="stylesheet" type="text/css" href={assetPath('css/page_loading.css')} />
       </Head>
 
       <LoadingGlobal display="none" id="loading-brand" />
