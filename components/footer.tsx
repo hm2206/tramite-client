@@ -1,7 +1,14 @@
 import React from "react";
 import Link from "next/link";
-import { FileText, Search, ExternalLink, Mail, Phone, MapPin } from 'lucide-react';
-
+import {
+  FileText,
+  Search,
+  ExternalLink,
+  Mail,
+  Phone,
+  MapPin,
+} from "lucide-react";
+import { assetPath } from "@/utils/assetPath";
 
 interface AppInfo {
   name?: string;
@@ -27,14 +34,22 @@ const Footer: React.FC<FooterProps> = ({ app }) => {
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#00a28a] to-[#00c9a7] flex items-center justify-center">
                 {app.icon ? (
-                  <img src={app.icon} alt="Logo" className="h-7 w-7 object-contain" />
+                  <img
+                    src={app.icon}
+                    alt="Logo"
+                    className="h-7 w-7 object-contain"
+                  />
                 ) : (
                   <FileText className="h-6 w-6 text-white" />
                 )}
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white">{app.name || 'Mesa de Partes'}</h3>
-                <p className="text-sm text-gray-400">Sistema de Tramite Documentario</p>
+                <h3 className="text-lg font-bold text-white">
+                  {app.name || "Mesa de Partes"}
+                </h3>
+                <p className="text-sm text-gray-400">
+                  Sistema de Tramite Documentario
+                </p>
               </div>
             </div>
             <p className="text-gray-400 mb-6 max-w-md">
@@ -49,7 +64,7 @@ const Footer: React.FC<FooterProps> = ({ app }) => {
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 text-white text-sm font-medium hover:bg-white/20 transition-colors"
               >
                 <ExternalLink className="h-4 w-4" />
-                {app.support_name || 'Soporte'}
+                {app.support_name || "Soporte"}
               </a>
             </div>
           </div>
@@ -62,7 +77,7 @@ const Footer: React.FC<FooterProps> = ({ app }) => {
             <ul className="space-y-3">
               <li>
                 <Link
-                  href="/"
+                  href={assetPath("/")}
                   className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group"
                 >
                   <Search className="h-4 w-4 text-[#00a28a] group-hover:text-[#00c9a7]" />
@@ -71,7 +86,7 @@ const Footer: React.FC<FooterProps> = ({ app }) => {
               </li>
               <li>
                 <Link
-                  href="/register"
+                  href={assetPath("/register")}
                   className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group"
                 >
                   <FileText className="h-4 w-4 text-[#00a28a] group-hover:text-[#00c9a7]" />
@@ -118,7 +133,8 @@ const Footer: React.FC<FooterProps> = ({ app }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-gray-500">
-              &copy; {currentYear} {app.name || 'Mesa de Partes'}. Todos los derechos reservados.
+              &copy; {currentYear} {app.name || "Mesa de Partes"}. Todos los
+              derechos reservados.
             </p>
             <div className="flex items-center gap-6">
               <span className="text-xs text-gray-600">
