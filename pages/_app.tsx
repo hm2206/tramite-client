@@ -16,7 +16,8 @@ import Cookies from 'js-cookie';
 import { store } from '../store';
 import { useGetAppInfoQuery } from '../store/api/authApi';
 
-const ASSET_PREFIX = process.env.NEXT_PUBLIC_ASSET_PREFIX || '';
+const ASSET_PREFIX_RAW = process.env.NEXT_PUBLIC_ASSET_PREFIX || '';
+const ASSET_PREFIX = ASSET_PREFIX_RAW ? (ASSET_PREFIX_RAW.endsWith('/') ? ASSET_PREFIX_RAW : ASSET_PREFIX_RAW + '/') : '';
 const APP_THEME = process.env.NEXT_PUBLIC_APP_THEME || 'default';
 
 Router.events.on('routeChangeStart', () => {
