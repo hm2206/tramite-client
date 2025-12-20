@@ -18,10 +18,10 @@ const Index = (props: any) => {
   const [fetched, setFetched] = useState(false);
 
   // RTK Query hook
-  const [findTramite, { data, isLoading, isError, isSuccess }] = useLazyFindTramiteQuery();
+  const [findTramite, { data, isLoading, isError }] = useLazyFindTramiteQuery();
 
   const tramite = data?.tramite || {};
-  const success = data?.success || false;
+  const success = data?.success === true && !isError;
 
   useEffect(() => {
     if (query.slug && query.slug !== slug) {
@@ -49,7 +49,8 @@ const Index = (props: any) => {
       newQuery.slug = slug;
       newQuery.length = String(length);
       newQuery.last_updated = String(moment().valueOf());
-      Router.push({ pathname: router.pathname, query: newQuery });
+      Router.push({ pathname: router.pathname, query: newQuery }, undefined, { shallow: true });
+      handleFetchTramite(slug);
     } catch (error) {
       console.error('Search error:', error);
     }
@@ -194,7 +195,7 @@ const Index = (props: any) => {
       </Show>
 
       {/* Error State */}
-      <Show condicion={fetched && !success && slug}>
+      <Show condicion={(fetched || isError) && !success && slug}>
         <section className="py-20">
           <div className="max-w-xl mx-auto px-4 text-center">
             <div className="card-elegant p-12">
