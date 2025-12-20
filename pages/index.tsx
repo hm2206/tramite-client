@@ -1,13 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Router from "next/router";
-import { Search, FileText, Clock, CheckCircle, AlertCircle, Loader2, QrCode, ArrowRight } from 'lucide-react';
+import {
+  Search,
+  FileText,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  Loader2,
+  QrCode,
+  ArrowRight,
+} from "lucide-react";
 import Show from "../components/show";
 import InfoTramite from "../components/infoTramite";
 import TimeLine from "../components/TimeLine";
 import moment from "moment";
 import { useLazyFindTramiteQuery } from "../store/api/tramiteApi";
-
+import { assetPath } from "@/utils/assetPath";
 
 const Index = (props: any) => {
   const router = useRouter();
@@ -37,7 +46,7 @@ const Index = (props: any) => {
     try {
       await findTramite(slugParam).unwrap();
     } catch (err) {
-      console.error('Error:', err);
+      console.error("Error:", err);
     }
     setFetched(true);
   };
@@ -49,10 +58,14 @@ const Index = (props: any) => {
       newQuery.slug = slug;
       newQuery.length = String(length);
       newQuery.last_updated = String(moment().valueOf());
-      Router.push({ pathname: router.pathname, query: newQuery }, undefined, { shallow: true });
+      Router.push(
+        { pathname: assetPath(router.pathname), query: newQuery },
+        undefined,
+        { shallow: true }
+      );
       handleFetchTramite(slug);
     } catch (error) {
-      console.error('Search error:', error);
+      console.error("Search error:", error);
     }
   };
 
@@ -62,13 +75,13 @@ const Index = (props: any) => {
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && length >= 10 && !isLoading) {
+    if (e.key === "Enter" && length >= 10 && !isLoading) {
       handleSearch();
     }
   };
 
   const handleReset = () => {
-    setSlug('');
+    setSlug("");
     setLength(0);
     setFetched(false);
   };
@@ -77,18 +90,18 @@ const Index = (props: any) => {
     {
       icon: <Clock className="h-6 w-6" />,
       title: "Tiempo Real",
-      description: "Seguimiento actualizado de tu trámite"
+      description: "Seguimiento actualizado de tu trámite",
     },
     {
       icon: <CheckCircle className="h-6 w-6" />,
       title: "Estado Actual",
-      description: "Conoce en qué oficina se encuentra"
+      description: "Conoce en qué oficina se encuentra",
     },
     {
       icon: <QrCode className="h-6 w-6" />,
       title: "Código QR",
-      description: "Acceso rápido con tu código único"
-    }
+      description: "Acceso rápido con tu código único",
+    },
   ];
 
   return (
@@ -114,7 +127,8 @@ const Index = (props: any) => {
             </h1>
 
             <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto">
-              Ingresa tu código de trámite para conocer el estado actual y seguimiento de tu documento
+              Ingresa tu código de trámite para conocer el estado actual y
+              seguimiento de tu documento
             </p>
           </div>
 
@@ -137,8 +151,8 @@ const Index = (props: any) => {
                 disabled={length < 10 || isLoading}
                 className={`px-8 py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 transition-all duration-300 ${
                   length >= 10 && !isLoading
-                    ? 'bg-gradient-to-r from-[#00a28a] to-[#00c9a7] text-white shadow-lg shadow-[#00a28a]/30 hover:shadow-xl hover:shadow-[#00a28a]/40 hover:-translate-y-0.5'
-                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    ? "bg-gradient-to-r from-[#00a28a] to-[#00c9a7] text-white shadow-lg shadow-[#00a28a]/30 hover:shadow-xl hover:shadow-[#00a28a]/40 hover:-translate-y-0.5"
+                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
                 }`}
               >
                 {isLoading ? (
@@ -172,7 +186,9 @@ const Index = (props: any) => {
                   <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-[#00a28a]/10 text-[#00a28a] mb-5 group-hover:scale-110 transition-transform duration-300">
                     {feature.icon}
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">{feature.title}</h3>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                    {feature.title}
+                  </h3>
                   <p className="text-gray-500">{feature.description}</p>
                 </div>
               ))}
@@ -187,8 +203,12 @@ const Index = (props: any) => {
           <div className="max-w-xl mx-auto px-4 text-center">
             <div className="card-elegant p-12">
               <div className="loader-elegant mx-auto mb-6"></div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Buscando trámite...</h3>
-              <p className="text-gray-500">Estamos localizando tu documento en el sistema</p>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                Buscando trámite...
+              </h3>
+              <p className="text-gray-500">
+                Estamos localizando tu documento en el sistema
+              </p>
             </div>
           </div>
         </section>
@@ -202,14 +222,14 @@ const Index = (props: any) => {
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 text-red-500 mb-6">
                 <AlertCircle className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Trámite no encontrado</h3>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                Trámite no encontrado
+              </h3>
               <p className="text-gray-500 mb-6">
-                No pudimos encontrar un trámite con el código <span className="font-medium text-gray-700">"{slug}"</span>
+                No pudimos encontrar un trámite con el código{" "}
+                <span className="font-medium text-gray-700">"{slug}"</span>
               </p>
-              <button
-                onClick={handleReset}
-                className="btn-secondary"
-              >
+              <button onClick={handleReset} className="btn-secondary">
                 Intentar de nuevo
               </button>
             </div>
@@ -240,7 +260,9 @@ const Index = (props: any) => {
                 <div className="card-elegant p-6 text-center">
                   <div className="flex items-center justify-center gap-2 mb-4">
                     <QrCode className="h-5 w-5 text-[#00a28a]" />
-                    <span className="font-semibold text-gray-700">Código QR del Trámite</span>
+                    <span className="font-semibold text-gray-700">
+                      Código QR del Trámite
+                    </span>
                   </div>
                   <div className="w-40 h-40 mx-auto bg-white rounded-xl p-2 border border-gray-100">
                     <img
@@ -249,7 +271,9 @@ const Index = (props: any) => {
                       className="w-full h-full object-contain"
                     />
                   </div>
-                  <p className="text-sm text-gray-500 mt-3">Escanea para acceso rápido</p>
+                  <p className="text-sm text-gray-500 mt-3">
+                    Escanea para acceso rápido
+                  </p>
                 </div>
               </div>
             </Show>
@@ -261,11 +285,19 @@ const Index = (props: any) => {
                   <Clock className="h-5 w-5 text-[#00a28a]" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-gray-800">Seguimiento del Trámite</h2>
-                  <p className="text-gray-500 text-sm">Historial de movimientos de tu documento</p>
+                  <h2 className="text-xl font-bold text-gray-800">
+                    Seguimiento del Trámite
+                  </h2>
+                  <p className="text-gray-500 text-sm">
+                    Historial de movimientos de tu documento
+                  </p>
                 </div>
               </div>
-              <TimeLine tramite={tramite} last_updated={query?.last_updated} {...props} />
+              <TimeLine
+                tramite={tramite}
+                last_updated={query?.last_updated}
+                {...props}
+              />
             </div>
           </div>
         </section>
